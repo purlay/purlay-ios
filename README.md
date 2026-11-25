@@ -33,7 +33,7 @@ You need Xcode 27 or later and [XcodeGen](https://github.com/yonaskolb/XcodeGen)
 ```sh
 xcodegen generate
 xcodebuild -project Purlay.xcodeproj -scheme Purlay -destination 'generic/platform=iOS Simulator' build
-scripts/verify    # shared files, decision rules, format, package tests, app tests
+scripts/verify    # the rules, then format and the tests on a simulator (lanes: scripts/verify rules | test)
 ```
 
 Debug builds can point at another server with `PURLAY_DEV_SERVER`. The development guide also shows how to run the sign-in
@@ -55,5 +55,5 @@ shared with [`purlay-macos`](https://github.com/purlay/purlay-macos); the server
 
 ## License
 
-[AGPL-3.0](LICENSE). Contributions are under the [contributor licence agreement](CLA.md). Security reports:
+Contributing: [`CONTRIBUTING.md`](CONTRIBUTING.md). [AGPL-3.0](LICENSE). Contributions are under the [contributor licence agreement](CLA.md). Security reports:
 [`SECURITY.md`](SECURITY.md). Third-party notices: [`NOTICE`](NOTICE).

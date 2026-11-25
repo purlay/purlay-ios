@@ -61,8 +61,18 @@ targets:
     dependencies:
       - target: Purlay
 schemes:
+  # What a pull request runs: the app's unit tests and the packages' tests, in one build for the simulator.
   Purlay:
     build:
       targets: { Purlay: all }
     test:
-      targets: [PurlayTests, PurlayUITests]
+      targets:
+        - PurlayTests
+        - package: PurlayDesign/PurlayDesignTests
+        - package: PurlayModuleAPI/PurlayModuleAPITests
+  # Signs in through the system browser against a real server; skipped without one (docs/development/getting-started.md).
+  PurlayUITests:
+    build:
+      targets: { Purlay: all }
+    test:
+      targets: [PurlayUITests]

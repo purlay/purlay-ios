@@ -1,29 +1,45 @@
-#!/bin/sh
-# Everything a change must pass: shared files, decision rules, format, package tests, the app build, the app's tests.
-set -eu
-cd "$(dirname "$0")/.."
+#!/usr/bin/env bash
+# Everything the pipeline checks, in lanes, so that CI runs them side by side and a person runs them all.
+#
+#   scripts/verify          every lane
+#   scripts/verify rules    branch name, shared files, decision rules and their demonstration   (no Xcode needed)
+#   scripts/verify test     format, then the app's and the packages' tests on a simulator
+#
+# Compilation is cached by content (Xcode's compilation cache) in PURLAY_CACHE_DIR, so a build in a fresh checkout reuses
+# what an earlier one compiled. The sign-in UI tests need a server and are their own scheme (see docs/development).
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-step() { printf '\n== %s\n' "$*"; }
+step() { printf '\n\033[1m==> %s\033[0m\n' "$*"; }
 
-step "shared files are the owners' copies"
-scripts/check-shared-files
+CAS="${PURLAY_CACHE_DIR:-$HOME/Library/Caches/dev.purlay/compilation-cache}"
 
-step "decision rules, and the demonstration that each one refuses its violation"
-scripts/enforcement
-scripts/enforcement --demo
+rules() {
+  step "branch name"
+  scripts/check-branch
+  step "shared files are the owners' copies"
+  scripts/check-shared-files
+  step "decision rules, and the demonstration that each one refuses its violation"
+  scripts/enforcement
+  scripts/enforcement --demo
+}
 
-step "format"
-find App Packages Tests -name '*.swift' -not -path '*/.build/*' -print0 | xargs -0 xcrun swift-format lint --strict --parallel
+tests() {
+  step "format"
+  find App Packages Tests -name '*.swift' -not -path '*/.build/*' -print0 | xargs -0 xcrun swift-format lint --strict --parallel
+  step "tests on a simulator"
+  xcodegen generate --quiet
+  local destination="${PURLAY_DESTINATION:-id=$(xcrun simctl list devices available | grep -m1 'iPhone' | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')}"
+  xcodebuild -project Purlay.xcodeproj -scheme Purlay -destination "$destination" \
+    COMPILATION_CACHE_ENABLE_CACHING=YES COMPILATION_CACHE_CAS_PATH="$CAS" \
+    COMPILER_INDEX_STORE_ENABLE=NO CODE_SIGNING_ALLOWED=NO -quiet test
+}
 
-for package in Packages/*/; do
-    step "swift test: $package"
-    (cd "$package" && swift test)
-done
+case "${1:-all}" in
+  rules) rules ;;
+  test) tests ;;
+  all) rules; tests ;;
+  *) echo "usage: scripts/verify [rules|test]" >&2; exit 2 ;;
+esac
 
-step "app tests"
-xcodegen generate --quiet
-DESTINATION=${PURLAY_DESTINATION:-$(xcrun simctl list devices available | grep -m1 'iPhone' | sed -E 's/.*\(([0-9A-F-]{36})\).*/id=\1/')}
-# The sign-in UI tests need a server and skip themselves without one (see Tests/PurlayUITests).
-xcodebuild -project Purlay.xcodeproj -scheme Purlay -destination "$DESTINATION" test
-
-printf '\nverify: everything passed\n'
+printf '\n\033[1mverify %s: everything passed\033[0m\n' "${1:-all}"
