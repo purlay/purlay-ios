@@ -3,8 +3,8 @@
 #
 #   scripts/verify             every lane
 #   scripts/verify rules       branch name, shared files, decision rules and their demonstration        (no Xcode needed)
-#   scripts/verify packages    the packages' tests, on macOS                                              (no simulator)
-#   scripts/verify build       format, and the app built for iOS                                          (no simulator)
+#   scripts/verify packages    format, and the packages' tests on macOS                                   (no simulator)
+#   scripts/verify build       the app built for iOS                                                      (no simulator)
 #   scripts/verify simulator   the app's and the packages' tests on a simulator
 #
 # A pull request runs the first three: starting a simulator costs minutes on a hosted runner whatever is tested, so
@@ -33,6 +33,8 @@ rules() {
 }
 
 packages() {
+  step "format"
+  find App Packages Tests -name '*.swift' -not -path '*/.build/*' -print0 | xargs -0 xcrun swift-format lint --strict --parallel
   for package in Packages/*/; do
     step "tests of $package, on macOS"
     (cd "$package" && cached -scheme "$(basename "$package")" -destination 'platform=macOS' test)
@@ -40,8 +42,6 @@ packages() {
 }
 
 build() {
-  step "format"
-  find App Packages Tests -name '*.swift' -not -path '*/.build/*' -print0 | xargs -0 xcrun swift-format lint --strict --parallel
   step "the app, built for iOS"
   xcodegen generate --quiet
   cached -project Purlay.xcodeproj -scheme Purlay -destination 'generic/platform=iOS Simulator' build
