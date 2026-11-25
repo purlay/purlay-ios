@@ -10,11 +10,12 @@ scripts/verify
 ```
 
 Four lanes, which CI runs side by side: `rules` (branch name, shared files, the decision rules and a demonstration that each refuses
-its violation), `packages` (the packages' tests on macOS), `build` (format, and the app built for iOS) and `simulator` (the app's and
+its violation), `packages` (format, and the packages' tests on macOS), `build` (the app built for iOS) and `simulator` (the app's and
 the packages' tests on a simulator). A pull request runs the first three, because starting a simulator costs minutes on a hosted
 runner whatever is tested; `simulator` runs for a pull request that changes the app itself (`App/`, `Tests/PurlayTests/`,
 `project.yml`, `Config/`), and always on `main`, on the weekly schedule and for a release. Compiled code is cached by content, so
-the second run is much faster than the first. A pull request is checked in about two minutes; keep it that way: a change that makes
+the second run is much faster than the first. A pull request that changes only documents (`docs/`, `*.md`, `LICENSE`, `NOTICE`,
+`.editorconfig`, `CODEOWNERS`) skips the compiling lanes; `verify` accepts that only when the `changes` job said so. A pull request is checked in about two minutes; keep it that way: a change that makes
 the check slower needs a reason in its description.
 
 ## What the rules protect

@@ -36,12 +36,16 @@ jobs:
       contents: read
       pull-requests: read
     outputs:
+      code: ${{ steps.which.outputs.code }}
       app: ${{ steps.which.outputs.app }}
     steps:
       - id: which
+        # A pull request that changes only documents has nothing to compile: its compiling lanes are skipped, and `verify` accepts
+        # that only when this job said so. Anything else, and every other event, runs them (main must save the caches).
         run: |
-          if [ "${{ github.event_name }}" != "pull_request" ]; then echo "app=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if [ "${{ github.event_name }}" != "pull_request" ]; then echo "code=true" >> "$GITHUB_OUTPUT"; echo "app=true" >> "$GITHUB_OUTPUT"; exit 0; fi
           files="$(gh pr diff "${{ github.event.pull_request.number }}" --name-only --repo "$GITHUB_REPOSITORY")"
+          if [ -z "$files" ] || printf '%s\n' "$files" | grep -vE '^(docs/|.*\.md$|LICENSE$|NOTICE$|\.editorconfig$|\.github/CODEOWNERS$)' | grep -q .; then echo "code=true" >> "$GITHUB_OUTPUT"; else echo "code=false" >> "$GITHUB_OUTPUT"; fi
           if printf '%s\n' "$files" | grep -qE '^(App/|Tests/PurlayTests/|project\.yml|Config/)'; then echo "app=true" >> "$GITHUB_OUTPUT"; else echo "app=false" >> "$GITHUB_OUTPUT"; fi
         env:
           GH_TOKEN: ${{ github.token }}
@@ -49,6 +53,8 @@ jobs:
   packages:
     runs-on: xcode-27
     timeout-minutes: 25
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -62,7 +68,7 @@ jobs:
           path: ${{ env.PURLAY_CACHE_DIR }}
           key: cas-packages-${{ steps.when.outputs.week }}-${{ steps.when.outputs.day }}
           restore-keys: cas-packages-${{ steps.when.outputs.week }}-
-      - name: The packages' tests, on macOS
+      - name: Format, and the packages' tests on macOS
         run: scripts/verify packages
       - name: Keep the compilation cache
         if: success() && github.ref == 'refs/heads/main' && steps.cas.outputs.cache-hit != 'true'
@@ -74,6 +80,8 @@ jobs:
   build:
     runs-on: xcode-27
     timeout-minutes: 25
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: brew install xcodegen
@@ -87,7 +95,7 @@ jobs:
           path: ${{ env.PURLAY_CACHE_DIR }}
           key: cas-build-${{ steps.when.outputs.week }}-${{ steps.when.outputs.day }}
           restore-keys: cas-build-${{ steps.when.outputs.week }}-
-      - name: Format, and the app built for iOS
+      - name: The app, built for iOS
         run: scripts/verify build
       - name: Keep the compilation cache
         if: success() && github.ref == 'refs/heads/main' && steps.cas.outputs.cache-hit != 'true'
@@ -125,11 +133,11 @@ jobs:
 
   verify:
     if: always()
-    needs: [rules, packages, build, simulator]
+    needs: [rules, changes, packages, build, simulator]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
       - name: Every lane passed
         run: |
           echo '${{ toJSON(needs) }}'
-          test "${{ needs.rules.result == 'success' && needs.packages.result == 'success' && needs.build.result == 'success' && (needs.simulator.result == 'success' || needs.simulator.result == 'skipped') }}" = "true"
+          test "${{ needs.rules.result == 'success' && needs.changes.result == 'success' && (needs.packages.result == 'success' || (needs.changes.outputs.code == 'false' && needs.packages.result == 'skipped')) && (needs.build.result == 'success' || (needs.changes.outputs.code == 'false' && needs.build.result == 'skipped')) && (needs.simulator.result == 'success' || (needs.changes.outputs.app == 'false' && needs.simulator.result == 'skipped')) }}" = "true"
