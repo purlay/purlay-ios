@@ -2,7 +2,7 @@
 
 1. Install Xcode 27+ and `brew install xcodegen`.
 2. `xcodegen generate`, then open `Purlay.xcodeproj` or build with `xcodebuild` (see the README).
-3. `scripts/verify` runs the rules and the tests; `scripts/verify rules` and `scripts/verify test` run one lane. Compiled code is cached by
+3. `scripts/verify` runs every lane; `scripts/verify rules|packages|build|simulator` runs one. Compiled code is cached by
    content (in `~/Library/Caches/dev.purlay`, or `PURLAY_CACHE_DIR`), so the second run is much faster than the first.
 
 ## Against a local server
