@@ -16,3 +16,19 @@ In the `purlay` repository: `bun run db:up && bun run db:migrate && bun run dev`
 - Strings go in `Localizable.xcstrings`, English and Turkish.
 - Views read a model and call it; they never reach the network.
 - Tests: Swift Testing; only network, Keychain and clock are replaced.
+
+## The sign-in against a server
+
+`Tests/PurlayUITests` signs in through the system browser. It needs a server and skips itself without one:
+
+```sh
+# in a purlay checkout at the server release purlay-swift's Contract/contract.lock names
+bun run demo -- --no-build --port 4590 --tls-cert cert.pem --tls-key key.pem   # a certificate the simulator trusts:
+xcrun simctl keychain booted add-root-cert cert.pem
+TEST_RUNNER_PURLAY_UITEST_SERVER=https://localhost:4590 \
+TEST_RUNNER_PURLAY_UITEST_SESSION="$(curl -sk -i 'https://localhost:4590/__demo/login?as=alice' | …value of __Host-purlay_session)" \
+  xcodebuild -project Purlay.xcodeproj -scheme Purlay -destination 'id=<simulator>' -only-testing:PurlayUITests test
+```
+
+Approving inside the system browser's page is not driven: its address bar is read-only and the simulator does not share
+Safari's cookies with it. The server's half of that step runs against a real server in purlay-swift's contract tests.

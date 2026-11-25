@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+# The decisions in docs/decisions that a compiler does not state by itself, and the values that must be one value.
+# Each rule is also run against a copy of the tree with the violation planted, so a rule that stopped looking is seen here.
+#
+#   scripts/enforcement            check the tree
+#   scripts/enforcement --demo     plant each violation in a copy and require the check to refuse it
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+# The numbers each of these files states, one per line.
+floors() { # root: the iOS floor, as every file that declares one says it
+  local root="$1"
+  sed -n 's/^IPHONEOS_DEPLOYMENT_TARGET = \([0-9]*\)\..*/\1/p' "$root/Config/Base.xcconfig"
+  sed -n 's/^ *iOS: "\([0-9]*\)\..*"/\1/p' "$root/project.yml"
+  grep -rhoE --include=Package.swift '\.iOS\(\.v[0-9]+\)' "$root/Packages" | sed -E 's/.*\.v([0-9]+).*/\1/'
+}
+pins() { # root: the purlay-swift version each file asks for
+  local root="$1"
+  grep -A2 'PurlaySwift:' "$root/project.yml" | sed -n 's/^ *from: \(.*\)$/\1/p'
+  grep -rhoE --include=Package.swift 'purlay-swift", from: "[0-9.]+"' "$root/Packages" | sed -E 's/.*from: "([0-9.]+)"/\1/'
+}
+
+check() { # root
+  local root="$1" failed=0
+  # One iOS floor (ADR 0001): the build settings, the project and every package say the same number.
+  if [ "$(floors "$root" | sort -u | wc -l | tr -d ' ')" != "1" ]; then
+    echo "FAIL: the iOS floor is not one number:" >&2; floors "$root" | sort | uniq -c >&2; failed=1
+  fi
+  # One purlay-swift version (ADR 0002): the project and every package ask for the same.
+  if [ "$(pins "$root" | sort -u | wc -l | tr -d ' ')" != "1" ]; then
+    echo "FAIL: purlay-swift is not pinned to one version:" >&2; pins "$root" | sort | uniq -c >&2; failed=1
+  fi
+  # OS-version branching lives in PurlayDesign alone (ADR 0001).
+  if grep -rnE --include='*.swift' '#available|#unavailable|@available' "$root/App" "$root/Packages" \
+      | grep -v '/PurlayDesign/' | grep -v '/\.build/'; then
+    echo "FAIL: an OS-version check outside PurlayDesign" >&2; failed=1
+  fi
+  # A feature depends on the shared core and never on another feature (ADR 0003).
+  for feature in "$root"/Packages/Feature*/; do
+    [ -d "$feature" ] || continue
+    name="$(basename "$feature")"
+    if grep -rnE --include='*.swift' '^\s*import Feature' "$feature/Sources" | grep -v "import $name\b"; then
+      echo "FAIL: $name imports another feature" >&2; failed=1
+    fi
+    if grep -nE 'path: "\.\./Feature' "$feature/Package.swift"; then
+      echo "FAIL: $name depends on another feature" >&2; failed=1
+    fi
+  done
+  # No third-party dependency beyond purlay-swift.
+  if grep -rnE --include=Package.swift '\.package\(url:' "$root/Packages" | grep -v 'purlay/purlay-swift'; then
+    echo "FAIL: a dependency nobody approved" >&2; failed=1
+  fi
+  # No escape from the compiler's concurrency checking, and nothing that traps on a value it was handed.
+  if grep -rnE --include='*.swift' '(@unchecked Sendable|nonisolated\(unsafe\)|try!|as!|fatalError\()' \
+      "$root/App" "$root/Packages" | grep -v '/\.build/' | grep -v 'enforcement-allow'; then
+    echo "FAIL: a concurrency escape or code that can trap" >&2; failed=1
+  fi
+  return $failed
+}
+
+if [ "${1:-}" != "--demo" ]; then
+  check . && echo "enforcement: the tree holds every rule"
+  exit
+fi
+
+fail=0
+plant() { # name, file (relative), line
+  local copy
+  copy="$(mktemp -d)"
+  rsync -a --exclude .build --exclude .swiftpm --exclude '*.xcodeproj' App Packages Config project.yml "$copy"/
+  mkdir -p "$copy/Packages/FeatureA/Sources/FeatureA" "$copy/Packages/FeatureB/Sources/FeatureB"
+  printf '// swift-tools-version: 6.2\n' > "$copy/Packages/FeatureA/Package.swift"
+  : > "$copy/Packages/FeatureA/Sources/FeatureA/A.swift"
+  : > "$copy/Packages/FeatureB/Sources/FeatureB/B.swift"
+  printf '%s\n' "$3" >> "$copy/$2"
+  if check "$copy" >/dev/null 2>&1; then echo "  NOT REFUSED  $1" >&2; fail=1; else echo "  refused      $1"; fi
+  rm -rf "$copy"
+}
+check . >/dev/null
+plant "a second iOS floor" Packages/PurlayDesign/Package.swift "// .iOS(.v17)"
+plant "a second purlay-swift pin" Packages/PurlayDesign/Package.swift '// purlay-swift", from: "9.9.9"'
+plant "#available outside PurlayDesign" App/PurlayApp.swift 'func gated() { if #available(iOS 26, *) {} }'
+plant "a feature importing a feature" Packages/FeatureA/Sources/FeatureA/A.swift "import FeatureB"
+plant "a feature depending on a feature" Packages/FeatureA/Package.swift '.package(path: "../FeatureB")'
+plant "an unapproved dependency" Packages/PurlayDesign/Package.swift '// .package(url: "https://example.test/Alamofire", from: "1.0.0")'
+plant "an unchecked Sendable" App/PurlayApp.swift "final class Leaky: @unchecked Sendable {}"
+plant "a force try" App/PurlayApp.swift 'let leaked = try! Data(contentsOf: URL(fileURLWithPath: "/"))'
+exit $fail

@@ -46,9 +46,23 @@ targets:
         INFOPLIST_PREPROCESS: NO
     dependencies:
       - target: Purlay
+  PurlayUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [Tests/PurlayUITests]
+    settings:
+      base:
+        PRODUCT_NAME: PurlayUITests
+        PRODUCT_BUNDLE_IDENTIFIER: dev.purlay.ios.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: ""
+        INFOPLIST_PREPROCESS: NO
+        TEST_TARGET_NAME: Purlay
+    dependencies:
+      - target: Purlay
 schemes:
   Purlay:
     build:
       targets: { Purlay: all }
     test:
-      targets: [PurlayTests]
+      targets: [PurlayTests, PurlayUITests]

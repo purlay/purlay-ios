@@ -6,6 +6,8 @@ on:
 jobs:
   verify:
     runs-on: xcode-27
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v7.0.1
       - run: brew install xcodegen

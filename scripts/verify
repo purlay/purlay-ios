@@ -1,14 +1,29 @@
 #!/bin/sh
-# Everything a change must pass: package tests, the app build, the app's tests.
+# Everything a change must pass: shared files, decision rules, format, package tests, the app build, the app's tests.
 set -eu
 cd "$(dirname "$0")/.."
 
+step() { printf '\n== %s\n' "$*"; }
+
+step "shared files are the owners' copies"
+scripts/check-shared-files
+
+step "decision rules, and the demonstration that each one refuses its violation"
+scripts/enforcement
+scripts/enforcement --demo
+
+step "format"
+find App Packages Tests -name '*.swift' -not -path '*/.build/*' -print0 | xargs -0 xcrun swift-format lint --strict --parallel
+
 for package in Packages/*/; do
-    echo "== swift test: $package"
+    step "swift test: $package"
     (cd "$package" && swift test)
 done
 
+step "app tests"
 xcodegen generate --quiet
 DESTINATION=${PURLAY_DESTINATION:-$(xcrun simctl list devices available | grep -m1 'iPhone' | sed -E 's/.*\(([0-9A-F-]{36})\).*/id=\1/')}
-echo "== app tests on $DESTINATION"
+# The sign-in UI tests need a server and skip themselves without one (see Tests/PurlayUITests).
 xcodebuild -project Purlay.xcodeproj -scheme Purlay -destination "$DESTINATION" test
+
+printf '\nverify: everything passed\n'
