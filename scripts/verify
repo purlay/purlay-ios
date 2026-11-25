@@ -1,0 +1,14 @@
+#!/bin/sh
+# Everything a change must pass: package tests, the app build, the app's tests.
+set -eu
+cd "$(dirname "$0")/.."
+
+for package in Packages/*/; do
+    echo "== swift test: $package"
+    (cd "$package" && swift test)
+done
+
+xcodegen generate --quiet
+DESTINATION=${PURLAY_DESTINATION:-$(xcrun simctl list devices available | grep -m1 'iPhone' | sed -E 's/.*\(([0-9A-F-]{36})\).*/id=\1/')}
+echo "== app tests on $DESTINATION"
+xcodebuild -project Purlay.xcodeproj -scheme Purlay -destination "$DESTINATION" test

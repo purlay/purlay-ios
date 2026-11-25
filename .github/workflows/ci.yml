@@ -1,0 +1,12 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  verify:
+    runs-on: xcode-27
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - run: brew install xcodegen
+      - run: scripts/verify

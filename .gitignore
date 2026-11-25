@@ -1,0 +1,13 @@
+# Generated, never committed (project.yml is the definition).
+*.xcodeproj/
+*.xcworkspace/
+.build/
+.swiftpm/
+DerivedData/
+build/
+# Local, never committed.
+*.local.md
+.DS_Store
+xcuserdata/
+Config/Local.xcconfig
+Package.resolved
