@@ -1,18 +1,26 @@
 #!/usr/bin/env bash
 # Everything the pipeline checks, in lanes, so that CI runs them side by side and a person runs them all.
 #
-#   scripts/verify          every lane
-#   scripts/verify rules    branch name, shared files, decision rules and their demonstration   (no Xcode needed)
-#   scripts/verify test     format, then the app's and the packages' tests on a simulator
+#   scripts/verify             every lane
+#   scripts/verify rules       branch name, shared files, decision rules and their demonstration        (no Xcode needed)
+#   scripts/verify packages    the packages' tests, on macOS                                              (no simulator)
+#   scripts/verify build       format, and the app built for iOS                                          (no simulator)
+#   scripts/verify simulator   the app's and the packages' tests on a simulator
 #
-# Compilation is cached by content (Xcode's compilation cache) in PURLAY_CACHE_DIR, so a build in a fresh checkout reuses
-# what an earlier one compiled. The sign-in UI tests need a server and are their own scheme (see docs/development).
+# A pull request runs the first three: starting a simulator costs minutes on a hosted runner whatever is tested, so
+# the fourth runs on main, on a schedule, for a release, and for a pull request that changes the app itself.
+# Compilation is cached by content (Xcode's compilation cache) in PURLAY_CACHE_DIR, so a build in a fresh checkout reuses what an
+# earlier one compiled. The sign-in UI tests need a server and are their own scheme (see docs/development).
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 step() { printf '\n\033[1m==> %s\033[0m\n' "$*"; }
 
 CAS="${PURLAY_CACHE_DIR:-$HOME/Library/Caches/dev.purlay/compilation-cache}"
+cached() { # xcodebuild arguments, with the compilation cache on
+  xcodebuild "$@" COMPILATION_CACHE_ENABLE_CACHING=YES COMPILATION_CACHE_CAS_PATH="$CAS" \
+    COMPILER_INDEX_STORE_ENABLE=NO CODE_SIGNING_ALLOWED=NO -quiet
+}
 
 rules() {
   step "branch name"
@@ -24,22 +32,37 @@ rules() {
   scripts/enforcement --demo
 }
 
-tests() {
+packages() {
+  for package in Packages/*/; do
+    step "tests of $package, on macOS"
+    (cd "$package" && cached -scheme "$(basename "$package")" -destination 'platform=macOS' test)
+  done
+}
+
+build() {
   step "format"
   find App Packages Tests -name '*.swift' -not -path '*/.build/*' -print0 | xargs -0 xcrun swift-format lint --strict --parallel
+  step "the app, built for iOS"
+  xcodegen generate --quiet
+  cached -project Purlay.xcodeproj -scheme Purlay -destination 'generic/platform=iOS Simulator' build
+}
+
+simulator() {
   step "tests on a simulator"
   xcodegen generate --quiet
   local destination="${PURLAY_DESTINATION:-id=$(xcrun simctl list devices available | grep -m1 'iPhone' | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')}"
-  xcodebuild -project Purlay.xcodeproj -scheme Purlay -destination "$destination" \
-    COMPILATION_CACHE_ENABLE_CACHING=YES COMPILATION_CACHE_CAS_PATH="$CAS" \
-    COMPILER_INDEX_STORE_ENABLE=NO CODE_SIGNING_ALLOWED=NO -quiet test
+  # Booted first, so that it starts while the build runs.
+  xcrun simctl boot "${destination#id=}" 2>/dev/null || true
+  cached -project Purlay.xcodeproj -scheme Purlay -destination "$destination" test
 }
 
 case "${1:-all}" in
   rules) rules ;;
-  test) tests ;;
-  all) rules; tests ;;
-  *) echo "usage: scripts/verify [rules|test]" >&2; exit 2 ;;
+  packages) packages ;;
+  build) build ;;
+  simulator) simulator ;;
+  all) rules; packages; build; simulator ;;
+  *) echo "usage: scripts/verify [rules|packages|build|simulator]" >&2; exit 2 ;;
 esac
 
 printf '\n\033[1mverify %s: everything passed\033[0m\n' "${1:-all}"

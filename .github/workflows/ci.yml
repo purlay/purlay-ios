@@ -15,7 +15,8 @@ permissions:
 env:
   PURLAY_CACHE_DIR: ${{ github.workspace }}/.cache/compilation
 
-# The lanes of scripts/verify run side by side; `verify` at the end is the one check a pull request needs.
+# The lanes of scripts/verify run side by side; `verify` at the end is the one check a pull request needs. A pull request does
+# not start a simulator (minutes on a hosted runner) unless it changes the app; main, the schedule and a release always do.
 jobs:
   rules:
     runs-on: ubuntu-latest
@@ -28,9 +29,51 @@ jobs:
           BRANCH: ${{ github.head_ref || github.ref_name }}
           GITHUB_TOKEN: ${{ github.token }}
 
-  test:
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      app: ${{ steps.which.outputs.app }}
+    steps:
+      - id: which
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then echo "app=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          files="$(gh pr diff "${{ github.event.pull_request.number }}" --name-only --repo "$GITHUB_REPOSITORY")"
+          if printf '%s\n' "$files" | grep -qE '^(App/|Tests/PurlayTests/|project\.yml|Config/)'; then echo "app=true" >> "$GITHUB_OUTPUT"; else echo "app=false" >> "$GITHUB_OUTPUT"; fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  packages:
     runs-on: xcode-27
-    timeout-minutes: 20
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - id: when
+        run: |
+          echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+          echo "day=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+      - id: cas
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.PURLAY_CACHE_DIR }}
+          key: cas-packages-${{ steps.when.outputs.week }}-${{ steps.when.outputs.day }}
+          restore-keys: cas-packages-${{ steps.when.outputs.week }}-
+      - name: The packages' tests, on macOS
+        run: scripts/verify packages
+      - name: Keep the compilation cache
+        if: success() && github.ref == 'refs/heads/main' && steps.cas.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.PURLAY_CACHE_DIR }}
+          key: cas-packages-${{ steps.when.outputs.week }}-${{ steps.when.outputs.day }}
+
+  build:
+    runs-on: xcode-27
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: brew install xcodegen
@@ -42,24 +85,51 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ env.PURLAY_CACHE_DIR }}
-          key: cas-test-${{ steps.when.outputs.week }}-${{ steps.when.outputs.day }}
-          restore-keys: cas-test-${{ steps.when.outputs.week }}-
-      - name: Format and tests
-        run: scripts/verify test
+          key: cas-build-${{ steps.when.outputs.week }}-${{ steps.when.outputs.day }}
+          restore-keys: cas-build-${{ steps.when.outputs.week }}-
+      - name: Format, and the app built for iOS
+        run: scripts/verify build
       - name: Keep the compilation cache
         if: success() && github.ref == 'refs/heads/main' && steps.cas.outputs.cache-hit != 'true'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ env.PURLAY_CACHE_DIR }}
-          key: cas-test-${{ steps.when.outputs.week }}-${{ steps.when.outputs.day }}
+          key: cas-build-${{ steps.when.outputs.week }}-${{ steps.when.outputs.day }}
+
+  simulator:
+    runs-on: xcode-27
+    timeout-minutes: 25
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: brew install xcodegen
+      - id: when
+        run: |
+          echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+          echo "day=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+      - id: cas
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.PURLAY_CACHE_DIR }}
+          key: cas-simulator-${{ steps.when.outputs.week }}-${{ steps.when.outputs.day }}
+          restore-keys: cas-simulator-${{ steps.when.outputs.week }}-
+      - name: Tests on a simulator
+        run: scripts/verify simulator
+      - name: Keep the compilation cache
+        if: success() && github.ref == 'refs/heads/main' && steps.cas.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.PURLAY_CACHE_DIR }}
+          key: cas-simulator-${{ steps.when.outputs.week }}-${{ steps.when.outputs.day }}
 
   verify:
     if: always()
-    needs: [rules, test]
+    needs: [rules, packages, build, simulator]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
       - name: Every lane passed
         run: |
           echo '${{ toJSON(needs) }}'
-          test "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" = "false"
+          test "${{ needs.rules.result == 'success' && needs.packages.result == 'success' && needs.build.result == 'success' && (needs.simulator.result == 'success' || needs.simulator.result == 'skipped') }}" = "true"
