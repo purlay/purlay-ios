@@ -2,7 +2,8 @@
 
 1. Install Xcode 27+ and `brew install xcodegen`.
 2. `xcodegen generate`, then open `Purlay.xcodeproj` or build with `xcodebuild` (see the README).
-3. `scripts/verify` runs every package's tests, builds the app and runs the app's tests.
+3. `scripts/verify` runs the rules and the tests; `scripts/verify rules` and `scripts/verify test` run one lane. Compiled code is cached by
+   content (in `~/Library/Caches/dev.purlay`, or `PURLAY_CACHE_DIR`), so the second run is much faster than the first.
 
 ## Against a local server
 
@@ -27,7 +28,7 @@ bun run demo -- --no-build --port 4590 --tls-cert cert.pem --tls-key key.pem   #
 xcrun simctl keychain booted add-root-cert cert.pem
 TEST_RUNNER_PURLAY_UITEST_SERVER=https://localhost:4590 \
 TEST_RUNNER_PURLAY_UITEST_SESSION="$(curl -sk -i 'https://localhost:4590/__demo/login?as=alice' | …value of __Host-purlay_session)" \
-  xcodebuild -project Purlay.xcodeproj -scheme Purlay -destination 'id=<simulator>' -only-testing:PurlayUITests test
+  xcodebuild -project Purlay.xcodeproj -scheme PurlayUITests -destination 'id=<simulator>' test
 ```
 
 Approving inside the system browser's page is not driven: its address bar is read-only and the simulator does not share
