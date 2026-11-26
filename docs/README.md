@@ -10,9 +10,9 @@ Swift 6, SwiftUI, Liquid Glass from iOS 26 and a system material before; iOS 18 
 - **Works:** launch and handshake, sign-in through the system browser (PKCE), resuming a stored session, a screen per phase of
   the shared `AppModel` (connecting, loading, sign-in, and a problem screen per kind of server problem with Try Again), every
   sentence in English and Turkish, notices the model gives (dismissable), a privacy manifest, the module registry (as a package, not
-  yet used by the app), the glass surface seam.
+  yet used by the app), the glass surface seam, the app icon (the Purlay mark, drawn from `Design/purlay.svg` by `scripts/icon`).
 - **Not yet:** any screen after sign-in (it shows "You're Signed In"), a feature package, APNs, a release path. Next slice is in the list below.
-- **Known problems:** see [tech debt](architecture/tech-debt.md); the ones that block a release are TD-003 and TD-005.
+- **Known problems:** see [tech debt](architecture/tech-debt.md); the one that blocks a release is TD-005 (signing and the release path).
 - **Seen in the simulator, 2026-11-26** (a build signed ad hoc, a server that answers only the handshake): connecting; loading;
   the problem screen in English (light) and in Turkish (dark, at the largest accessibility text size, where it scrolls and the
   button wraps); sign-in in English and Turkish; the notice banner in English and Turkish.
@@ -65,6 +65,7 @@ A change is not done until `make verify` is green, and `make verify-security` wh
 
 ```
 App/                   composition root, real environment, one screen per phase
+Design/                the logo (purlay.svg), the source of the app icon
 Packages/              PurlayModuleAPI (feature protocol, registry), PurlayDesign (the OS-version seam)
 Tests/                 PurlayTests (unit), PurlayUITests (sign-in against a real server)
 Config/                xcconfig per configuration; project.yml defines the project
