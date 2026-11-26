@@ -101,6 +101,14 @@ SystemBootTime|systemUptime|mach_absolute_time
 DiskSpace|volumeAvailableCapacity|volumeTotalCapacity|systemFreeSize|statfs|getattrlist
 ActiveKeyboards|activeInputModes
 APIS
+  # App Transport Security stays strict in a release build (FR-006): the local-networking exception is written by the Debug
+  # configuration alone, and nothing here ever allows arbitrary loads.
+  if grep -nE 'PURLAY_ALLOWS_LOCAL_NETWORKING|^PURLAY_PLIST_DEFINITIONS *= *[^ ]' "$root/Config/Release.xcconfig" "$root/Config/Base.xcconfig"; then
+    echo "FAIL: a transport-security exception outside the Debug configuration" >&2; failed=1
+  fi
+  if grep -nE 'NSAllowsArbitraryLoads' "$root/App/Resources/Info.plist"; then
+    echo "FAIL: arbitrary loads allowed" >&2; failed=1
+  fi
   return $failed
 }
 
@@ -139,6 +147,8 @@ plant "a force try" App/PurlayApp.swift 'let leaked = try! Data(contentsOf: URL(
 plant "a second macOS number" Packages/PurlayDesign/Package.swift "// .macOS(.v15)"
 plant "a button built from a LocalizedStringResource" App/Root/RootView.swift 'let leaked = Button(Words.tryAgain) {}'
 plant "an undeclared required-reason API" App/PurlayApp.swift 'let booted = ProcessInfo.processInfo.systemUptime'
+plant "a transport-security exception in Release" Config/Release.xcconfig "PURLAY_PLIST_DEFINITIONS = PURLAY_ALLOWS_LOCAL_NETWORKING=1"
+plant "arbitrary loads" App/Resources/Info.plist "<key>NSAllowsArbitraryLoads</key>"
 # A string with no translation: the entry's Turkish is taken out of a copy.
 copy="$(mktemp -d)"
 rsync -a --exclude .build --exclude .swiftpm --exclude '*.xcodeproj' App Packages Config project.yml "$copy"/
