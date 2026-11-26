@@ -6,12 +6,15 @@ The rules every Purlay repository shares (branches, commits, pull requests, the 
 ## Before you push
 
 ```sh
-scripts/verify
+make verify            # rules, format and package tests, the app built for iOS
+make verify-security   # the history scanned for secrets
+make verify-all        # every lane, the simulator included
 ```
 
-Four lanes, which CI runs side by side: `rules` (branch name, shared files, the decision rules and a demonstration that each refuses
-its violation), `packages` (format, and the packages' tests on macOS), `build` (the app built for iOS) and `simulator` (the app's and
-the packages' tests on a simulator). A pull request runs the first three, because starting a simulator costs minutes on a hosted
+`scripts/verify` holds the lanes and `make` is the entry point ([ADR 0005](docs/decisions/0005-verify-entry-point-and-secret-scan.md)).
+Five lanes, which CI runs side by side: `rules` (branch name, shared files, the decision rules and a demonstration that each refuses
+its violation), `packages` (format, and the packages' tests on macOS), `build` (the app built for iOS) `simulator` (the app's and
+the packages' tests on a simulator) and `security` (the history scanned for secrets, required even for a change to documents only). A pull request runs the first three and `security`, because starting a simulator costs minutes on a hosted
 runner whatever is tested; `simulator` runs for a pull request that changes the app itself (`App/`, `Tests/PurlayTests/`,
 `project.yml`, `Config/`), and always on `main`, on the weekly schedule and for a release. Compiled code is cached by content, so
 the second run is much faster than the first. A pull request that changes only documents (`docs/`, `*.md`, `LICENSE`, `NOTICE`,
