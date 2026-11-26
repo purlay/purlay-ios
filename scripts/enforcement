@@ -20,8 +20,28 @@ pins() { # root: the purlay-swift version each file asks for
   grep -rhoE --include=Package.swift 'purlay-swift", from: "[0-9.]+"' "$root/Packages" | sed -E 's/.*from: "([0-9.]+)"/\1/'
 }
 
+png_field() { # file offset length: that many bytes of the PNG header as a number (od and bash only: this runs on a Linux runner too)
+  local hex
+  hex="$(od -An -tx1 -j"$2" -N"$3" "$1" | tr -d ' \n')"
+  echo "$((16#$hex))"
+}
+
 check() { # root
   local root="$1" failed=0
+  # The icon is one 1024 by 1024 picture with no alpha channel (the App Store refuses one that has it, and the system rounds the
+  # corners itself); scripts/icon writes it from Design/purlay.svg. PNG colour type 0 (grey) and 2 (RGB) have no alpha.
+  local set="$root/App/Resources/Assets.xcassets/AppIcon.appiconset" icon="icon-1024.png"
+  if [ ! -f "$set/$icon" ] || ! grep -q "\"$icon\"" "$set/Contents.json"; then
+    echo "FAIL: the app icon set has no $icon" >&2; failed=1
+  else
+    if [ "$(png_field "$set/$icon" 16 4)x$(png_field "$set/$icon" 20 4)" != "1024x1024" ]; then
+      echo "FAIL: $icon is not 1024x1024" >&2; failed=1
+    fi
+    case "$(png_field "$set/$icon" 25 1)" in
+      0 | 2) ;;
+      *) echo "FAIL: $icon has an alpha channel" >&2; failed=1 ;;
+    esac
+  fi
   # One iOS floor (ADR 0001): the build settings, the project and every package say the same number.
   if [ "$(floors "$root" | sort -u | wc -l | tr -d ' ')" != "1" ]; then
     echo "FAIL: the iOS floor is not one number:" >&2; floors "$root" | sort | uniq -c >&2; failed=1
@@ -76,7 +96,18 @@ plant() { # name, file (relative), line
   if check "$copy" >/dev/null 2>&1; then echo "  NOT REFUSED  $1" >&2; fail=1; else echo "  refused      $1"; fi
   rm -rf "$copy"
 }
+plant_icon() { # name, shell command run in the copy's icon set
+  local copy
+  copy="$(mktemp -d)"
+  rsync -a --exclude .build --exclude .swiftpm --exclude '*.xcodeproj' App Packages Config project.yml "$copy"/
+  (cd "$copy/App/Resources/Assets.xcassets/AppIcon.appiconset" && eval "$2")
+  if check "$copy" >/dev/null 2>&1; then echo "  NOT REFUSED  $1" >&2; fail=1; else echo "  refused      $1"; fi
+  rm -rf "$copy"
+}
 check . >/dev/null
+plant_icon "an icon file missing" 'rm icon-1024.png'
+plant_icon "an icon at the wrong size" 'printf "\x00\x00\x01\x00" | dd of=icon-1024.png bs=1 seek=16 conv=notrunc 2>/dev/null'
+plant_icon "an icon with an alpha channel" 'printf "\x06" | dd of=icon-1024.png bs=1 seek=25 conv=notrunc 2>/dev/null'
 plant "a second iOS floor" Packages/PurlayDesign/Package.swift "// .iOS(.v17)"
 plant "a second purlay-swift pin" Packages/PurlayDesign/Package.swift '// purlay-swift", from: "9.9.9"'
 plant "#available outside PurlayDesign" App/PurlayApp.swift 'func gated() { if #available(iOS 26, *) {} }'

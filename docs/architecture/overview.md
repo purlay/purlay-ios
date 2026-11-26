@@ -91,8 +91,8 @@ haptics, motion and component modifiers are added to `PurlayDesign` as the first
 3. **Inbox, search, profile and settings, Deep Work and quiet hours.**
 4. **APNs:** needs a server endpoint and a sender in the push worker (the server speaks Web Push only, D-126), then the app side.
 5. **Issues module**, then each new server module in the same pattern.
-6. **Release:** distribution is not decided (see the [vision](../product/vision.md), Q-001); signing, a privacy manifest, an app
-   icon and a TestFlight lane follow it ([tech debt](tech-debt.md)).
+6. **Release:** distribution is not decided (see the [vision](../product/vision.md), Q-001); signing, a privacy manifest and a TestFlight
+   lane follow it ([tech debt](tech-debt.md)).
 
 ## 7. Repositories
 

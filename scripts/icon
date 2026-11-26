@@ -1,0 +1,47 @@
+#!/usr/bin/env swift
+// The app's icon, made from the logo (Design/purlay.svg): the mark on a white square, 1024 by 1024, with no alpha channel.
+// The App Store refuses an icon that has one, and the system rounds the corners itself, so the picture is a full-bleed
+// square and carries no shape of its own. The logo is transparent around its mark; the white behind it is this script's.
+//
+//   scripts/icon    write App/Resources/Assets.xcassets/AppIcon.appiconset from the logo
+import AppKit
+
+let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+let source = root.appendingPathComponent("Design/purlay.svg")
+let set = root.appendingPathComponent("App/Resources/Assets.xcassets/AppIcon.appiconset")
+let name = "icon-1024.png"
+
+guard let logo = NSImage(contentsOf: source), logo.size.width > 0, logo.size.height > 0 else {
+    FileHandle.standardError.write(Data("FAIL: \(source.path) cannot be read as a picture\n".utf8))
+    exit(1)
+}
+
+let side = 1024
+func fail(_ message: String) -> Never {
+    FileHandle.standardError.write(Data("FAIL: \(message)\n".utf8))
+    exit(1)
+}
+// An opaque context: its alpha byte is skipped, so the picture has no alpha channel to write.
+guard
+    let context = CGContext(
+        data: nil, width: side, height: side, bitsPerComponent: 8, bytesPerRow: 0,
+        space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)
+else { fail("no drawing context") }
+context.interpolationQuality = .high
+let canvas = CGRect(x: 0, y: 0, width: side, height: side)
+context.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 1))
+context.fill(canvas)
+NSGraphicsContext.saveGraphicsState()
+NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: false)
+logo.draw(in: canvas, from: .zero, operation: .sourceOver, fraction: 1)
+NSGraphicsContext.restoreGraphicsState()
+guard let image = context.makeImage(), let png = NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])
+else { fail("the picture cannot be written as a PNG") }
+
+try FileManager.default.createDirectory(at: set, withIntermediateDirectories: true)
+try png.write(to: set.appendingPathComponent(name))
+let entry: [String: String] = ["filename": name, "idiom": "universal", "platform": "ios", "size": "1024x1024"]
+let contents: [String: Any] = ["images": [entry], "info": ["author": "xcode", "version": 1]]
+try JSONSerialization.data(withJSONObject: contents, options: [.prettyPrinted, .sortedKeys])
+    .write(to: set.appendingPathComponent("Contents.json"))
+print("wrote \(name) to \(set.path)")

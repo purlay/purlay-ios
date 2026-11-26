@@ -8,9 +8,10 @@ Swift 6, SwiftUI, Liquid Glass from iOS 26 and a system material before; iOS 18 
 
 - **Stage:** foundation. The project, package graph, native sign-in and CI are in place and tested against a real server. Nothing is released.
 - **Works:** launch and handshake, sign-in through the system browser (PKCE), resuming a stored session, a screen per phase of
-  the shared `AppModel`, the module registry (as a package, not yet used by the app), the glass surface seam.
+  the shared `AppModel`, the module registry (as a package, not yet used by the app), the glass surface seam, the app icon (the Purlay mark,
+  drawn from `Design/purlay.svg` by `scripts/icon`).
 - **Not yet:** any screen after sign-in (it shows "Signed in"), a feature package, APNs, a release path. Next slice is in the list below.
-- **Known problems:** see [tech debt](architecture/tech-debt.md); the ones that block a release are TD-002, TD-003 and TD-005.
+- **Known problems:** see [tech debt](architecture/tech-debt.md); the ones that block a release are TD-002 and TD-005.
 - **Baseline, measured 2026-11-26** with `scripts/verify` (all lanes, warm cache, 25 s): rules, format, the packages' tests on
   macOS, the app built for iOS, and the tests on a simulator all pass; the secret scan found no leak in the history. The sign-in UI
   tests skip themselves without a server, so they were not run.
@@ -59,6 +60,7 @@ A change is not done until `make verify` is green, and `make verify-security` wh
 
 ```
 App/                   composition root, real environment, one screen per phase
+Design/                the logo (purlay.svg), the source of the app icon
 Packages/              PurlayModuleAPI (feature protocol, registry), PurlayDesign (the OS-version seam)
 Tests/                 PurlayTests (unit), PurlayUITests (sign-in against a real server)
 Config/                xcconfig per configuration; project.yml defines the project

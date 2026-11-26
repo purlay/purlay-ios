@@ -50,14 +50,16 @@ Statuses: Draft, Approved, In progress, Done, Cancelled. Priorities: MVP, Next, 
 | A-001 | Bundle id `dev.purlay.ios` and the `purlay://auth` scheme are final | The scheme is fixed by the server (`NATIVE_REDIRECT`); macOS shares it, which is safe because the platforms differ | Medium | Approved |
 | A-002 | The first screens are SwiftUI with no UIKit | No measured need yet | Low | Approved |
 | A-003 | Local store for cold start is decided by a replay spike before chat ships | Needs measurement against the replay protocol | Medium | Proposed |
+| A-005 | The app icon is the owner's logo on a white square | The logo is light blue on a transparent background and the App Store refuses an icon with transparency; white is also what the macOS icon sits on | Low | Proposed |
 
 ## Open questions
 
 | ID | Question | Owner | Target date | Answer / decision |
 |----|----------|-------|-------------|-------------------|
-| Q-001 | On what licensing basis may a build be released (App Store terms against the AGPL; the CLA relicensing route)? Blocks TD-002, TD-003 and TD-005 becoming urgent | Owner | Before the first TestFlight | Open (server D-338) |
+| Q-001 | On what licensing basis may a build be released (App Store terms against the AGPL; the CLA relicensing route)? Blocks TD-002 and TD-005 becoming urgent | Owner | Before the first TestFlight | Open (server D-338) |
 | Q-002 | What adoption target (weekly active people) and date should the vision carry? | Owner | Before the first release | Open |
 | Q-003 | Does the server get a minimum-client gate for `ios` (`MIN_CLIENT_*` names macOS only) before release? | Owner | Before the first release | Open |
+| Q-004 | Is a white background right for the icon (A-005), and should there be a dark and a tinted icon for iOS 18 and later (TD-010)? | Owner | Before the first TestFlight | Open |
 
 ## Out of scope
 
