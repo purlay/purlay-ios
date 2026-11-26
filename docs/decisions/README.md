@@ -9,3 +9,4 @@ One file per decision, numbered, never rewritten: a changed decision is a new re
 | [0003](0003-feature-modules.md) | One feature package per server module, registered, never importing each other |
 | [0004](0004-contract-single-source.md) | The contract stays in the server repository; every platform generates from its bundle |
 | [0005](0005-verify-entry-point-and-secret-scan.md) | `make verify` over the lanes of `scripts/verify`, and a secret scan |
+| [0006](0006-app-tests-use-their-own-fakes.md) | The app's tests use fakes of their own, not `PurlayTestSupport` |
