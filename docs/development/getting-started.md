@@ -19,7 +19,7 @@ In the `purlay` repository: `bun run db:up && bun run db:migrate && bun run dev`
 - The rules are in [`docs/architecture/conventions.md`](../architecture/conventions.md); a short version:
 - Swift 6 language mode, complete strict concurrency, warnings are errors.
 - `swift-format` with the repository's `.swift-format` (shared with `purlay-macos` and `purlay-swift`).
-- Strings go in a string catalogue, English and Turkish. (The catalogue does not exist yet: TD-001 in `docs/architecture/tech-debt.md`.)
+- Strings go through `Words` and `Localizable.xcstrings`, English and Turkish (see [conventions](../architecture/conventions.md)).
 - Views read a model and call it; they never reach the network.
 - Tests: Swift Testing; only network, Keychain and clock are replaced.
 
@@ -38,3 +38,17 @@ TEST_RUNNER_PURLAY_UITEST_SESSION="$(curl -sk -i 'https://localhost:4590/__demo/
 
 Approving inside the system browser's page is not driven: its address bar is read-only and the simulator does not share
 Safari's cookies with it. The server's half of that step runs against a real server in purlay-swift's contract tests.
+
+## Looking at the screens
+
+`scripts/verify` builds with `CODE_SIGNING_ALLOWED=NO`, and an unsigned app cannot use the Keychain on a simulator: it starts signed out
+and says its storage failed (TD-009). To look at the app, build it with ad-hoc signing:
+
+```sh
+xcodebuild -project Purlay.xcodeproj -scheme Purlay -destination 'id=<simulator>' CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES build
+SIMCTL_CHILD_PURLAY_DEV_SERVER=http://localhost:4590 xcrun simctl launch <simulator> dev.purlay.ios -AppleLanguages '(tr)'
+xcrun simctl ui <simulator> content_size accessibility-extra-extra-extra-large   # and: appearance dark
+```
+
+A server that answers `GET /api/client` is enough to reach the sign-in screen; an address nobody answers shows the problem screen
+after the client's retries (about twenty seconds).

@@ -46,6 +46,10 @@ targets:
         INFOPLIST_PREPROCESS: NO
     dependencies:
       - target: Purlay
+      - package: PurlaySwift
+        product: PurlayKit
+      - package: PurlaySwift
+        product: PurlayContract
   PurlayUITests:
     type: bundle.ui-testing
     platform: iOS
