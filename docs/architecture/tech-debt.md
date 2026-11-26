@@ -1,0 +1,15 @@
+# Technical debt
+
+Accepted debts only. A repaid line is deleted (history is in git). "Below the floor" is a debt taken on at the owner's
+insistence under the quality floor; none exists.
+
+| ID | Debt | Impact | Repayment condition | Owner | Below the floor? |
+|---|---|---|---|---|---|
+| TD-001 | No string catalogue: the screens' strings are English literals, and Turkish (a declared language) has no translation. `docs/development/getting-started.md` and `CONTRIBUTING.md` promise one | Medium: the app is English-only in practice; each new screen adds untranslated strings | Before the first screen beyond the placeholder: add `Localizable.xcstrings` with `en` and `tr` | App owner | No |
+| TD-002 | No privacy manifest (`PrivacyInfo.xcprivacy`), though the app reads `UserDefaults` (a required-reason API) | High for release: App Store submission is refused without it | Before the first TestFlight or App Store build | App owner | No |
+| TD-003 | `AppIcon` set has no image (its `Contents.json` names a 1024 pt slot and no file) | Medium for release: submission is refused; the app shows a blank icon | Before the first TestFlight build | App owner | No |
+| TD-004 | `RootView` shows `String(describing: problem)` for a server problem: a developer's description, not a sentence for a person, and not localised | Medium: confusing text on the one error screen; no retry action | With the shell slice: one message per `ServerProblem` case, a retry button, and a test for each | App owner | No |
+| TD-005 | No release path in CI: no signing identity (`DEVELOPMENT_TEAM` is empty), no archive, no TestFlight upload | High for release; none for development | When distribution is decided (Q-001); then an ADR and a runbook | App owner | No |
+| TD-006 | The app target's tests cover one fact (the platform it reports). Behaviour is covered in `purlay-swift` (`AppModelTests` and others) and by the skipped-without-a-server UI tests | Low now, since the app has little code of its own; grows with each screen | Each screen adds its own tests; revisit when the UI tests have a server in CI | App owner | No |
+| TD-007 | The sign-in's approval step is not driven by a UI test (the system browser's page cannot be automated in the simulator); the server's half is tested in `purlay-swift` | Low: a regression in the app's half of the redirect would be found by hand | If Apple exposes a way to drive the sheet, or when a device-lab lane exists | App owner | No |
+| TD-008 | `PurlayDesign` declares macOS 26 (it must: `purlay-swift` does) and `PurlayModuleAPI` macOS 15. macOS appears at all only so `scripts/verify packages` can test the packages without a simulator | Low: two numbers that look inconsistent; no effect on the app | When the packages' tests move to a simulator lane, drop the macOS platforms; or state one value in an ADR | App owner | No |

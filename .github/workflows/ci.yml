@@ -131,13 +131,25 @@ jobs:
           path: ${{ env.PURLAY_CACHE_DIR }}
           key: cas-simulator-${{ steps.when.outputs.week }}-${{ steps.when.outputs.day }}
 
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The whole history: a secret that was committed and then removed is still in it.
+          fetch-depth: 0
+      - run: scripts/install-gitleaks
+      - name: Secrets in the history
+        run: scripts/verify security
+
   verify:
     if: always()
-    needs: [rules, changes, packages, build, simulator]
+    needs: [rules, changes, packages, build, simulator, security]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
       - name: Every lane passed
         run: |
           echo '${{ toJSON(needs) }}'
-          test "${{ needs.rules.result == 'success' && needs.changes.result == 'success' && (needs.packages.result == 'success' || (needs.changes.outputs.code == 'false' && needs.packages.result == 'skipped')) && (needs.build.result == 'success' || (needs.changes.outputs.code == 'false' && needs.build.result == 'skipped')) && (needs.simulator.result == 'success' || (needs.changes.outputs.app == 'false' && needs.simulator.result == 'skipped')) }}" = "true"
+          test "${{ needs.rules.result == 'success' && needs.security.result == 'success' && needs.changes.result == 'success' && (needs.packages.result == 'success' || (needs.changes.outputs.code == 'false' && needs.packages.result == 'skipped')) && (needs.build.result == 'success' || (needs.changes.outputs.code == 'false' && needs.build.result == 'skipped')) && (needs.simulator.result == 'success' || (needs.changes.outputs.app == 'false' && needs.simulator.result == 'skipped')) }}" = "true"
