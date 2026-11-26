@@ -1,9 +1,13 @@
 # Getting started
 
-1. Install Xcode 27+ and `brew install xcodegen`.
+1. Install Xcode 27 or later, then `make setup`: it installs XcodeGen and gitleaks at the versions the repository pins, from their
+   releases, checked against pinned digests. (Homebrew's XcodeGen also works if it is the pinned version.)
 2. `xcodegen generate`, then open `Purlay.xcodeproj` or build with `xcodebuild` (see the README).
-3. `scripts/verify` runs every lane; `scripts/verify rules|packages|build|simulator` runs one. Compiled code is cached by
-   content (in `~/Library/Caches/dev.purlay`, or `PURLAY_CACHE_DIR`), so the second run is much faster than the first.
+3. `make verify` runs what a pull request needs (rules, format and package tests, the app built for iOS); `make verify-security` scans
+   the history for secrets; `make verify-all` adds the simulator. One lane alone: `scripts/verify rules|packages|build|simulator|security`.
+   Compiled code is cached by content (in `~/Library/Caches/dev.purlay`, or `PURLAY_CACHE_DIR`), so the second run is much faster than the first.
+4. `scripts/check-shared-files` reads the owners' files from GitHub, and the repositories are private: run it as
+   `GITHUB_TOKEN="$(gh auth token)" scripts/verify rules`. Offline, `PURLAY_OFFLINE=1` skips only that check.
 
 ## Against a local server
 
@@ -12,9 +16,10 @@ In the `purlay` repository: `bun run db:up && bun run db:migrate && bun run dev`
 
 ## Conventions
 
+- The rules are in [`docs/architecture/conventions.md`](../architecture/conventions.md); a short version:
 - Swift 6 language mode, complete strict concurrency, warnings are errors.
 - `swift-format` with the repository's `.swift-format` (shared with `purlay-macos` and `purlay-swift`).
-- Strings go in `Localizable.xcstrings`, English and Turkish.
+- Strings go in a string catalogue, English and Turkish. (The catalogue does not exist yet: TD-001 in `docs/architecture/tech-debt.md`.)
 - Views read a model and call it; they never reach the network.
 - Tests: Swift Testing; only network, Keychain and clock are replaced.
 

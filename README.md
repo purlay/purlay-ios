@@ -28,12 +28,13 @@
 
 ## Build
 
-You need Xcode 27 or later and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+You need Xcode 27 or later. `make setup` installs the pinned [XcodeGen](https://github.com/yonaskolb/XcodeGen) and gitleaks.
 
 ```sh
+make setup
 xcodegen generate
 xcodebuild -project Purlay.xcodeproj -scheme Purlay -destination 'generic/platform=iOS Simulator' build
-scripts/verify    # every lane (or one: scripts/verify rules | packages | build | simulator)
+make verify        # what a pull request needs (make verify-all adds the simulator, make verify-security scans for secrets)
 ```
 
 Debug builds can point at another server with `PURLAY_DEV_SERVER`. The development guide also shows how to run the sign-in
@@ -49,9 +50,12 @@ shared with [`purlay-macos`](https://github.com/purlay/purlay-macos); the server
 
 | Folder | Holds |
 |---|---|
-| [`docs/architecture/`](docs/architecture) | Package graph, server integration, the design-system seam, build order |
+| [`docs/`](docs) | The entry point: current status, constraints, the next slices, how to verify |
+| [`docs/product/`](docs/product) | Vision and requirements |
+| [`docs/architecture/`](docs/architecture) | What the code is, conventions, technical debt |
 | [`docs/decisions/`](docs/decisions) | Architecture decision records: what was chosen, and what was rejected |
 | [`docs/development/`](docs/development) | Setting up, building, testing |
+| [`docs/runbooks/`](docs/runbooks) | Moving to a new `purlay-swift`, changing a shared file |
 
 ## License
 

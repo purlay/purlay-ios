@@ -6,9 +6,11 @@
 #   scripts/verify packages    format, and the packages' tests on macOS                                   (no simulator)
 #   scripts/verify build       the app built for iOS                                                      (no simulator)
 #   scripts/verify simulator   the app's and the packages' tests on a simulator
+#   scripts/verify security    the whole history scanned for secrets (gitleaks, at the version scripts/install-gitleaks pins)
 #
 # A pull request runs the first three: starting a simulator costs minutes on a hosted runner whatever is tested, so
-# the fourth runs on main, on a schedule, for a release, and for a pull request that changes the app itself.
+# the fourth runs on main, on a schedule, for a release, and for a pull request that changes the app itself. The security lane
+# needs a full clone and no Xcode, so CI runs it on its own cheap runner.
 # Compilation is cached by content (Xcode's compilation cache) in PURLAY_CACHE_DIR, so a build in a fresh checkout reuses what an
 # earlier one compiled. The sign-in UI tests need a server and are their own scheme (see docs/development).
 set -euo pipefail
@@ -56,13 +58,25 @@ simulator() {
   cached -project Purlay.xcodeproj -scheme Purlay -destination "$destination" test
 }
 
+security() {
+  step "secrets in the history"
+  if ! command -v gitleaks >/dev/null 2>&1 || [ "$(gitleaks version 2>/dev/null | head -n 1)" != "$(sed -n 's/^VERSION=//p' scripts/install-gitleaks)" ]; then
+    scripts/install-gitleaks
+    # A fresh install is on the PATH of later steps in CI; a person's shell needs it said.
+    PATH="${GITLEAKS_HOME:-$HOME/.local/share/purlay/gitleaks-$(sed -n 's/^VERSION=//p' scripts/install-gitleaks)}:$PATH"
+  fi
+  command -v gitleaks >/dev/null 2>&1 || { echo "FAIL: gitleaks could not be installed, so the history was not scanned" >&2; exit 1; }
+  gitleaks git --no-banner
+}
+
 case "${1:-all}" in
   rules) rules ;;
   packages) packages ;;
   build) build ;;
   simulator) simulator ;;
-  all) rules; packages; build; simulator ;;
-  *) echo "usage: scripts/verify [rules|packages|build|simulator]" >&2; exit 2 ;;
+  security) security ;;
+  all) rules; packages; build; simulator; security ;;
+  *) echo "usage: scripts/verify [rules|packages|build|simulator|security]" >&2; exit 2 ;;
 esac
 
 printf '\n\033[1mverify %s: everything passed\033[0m\n' "${1:-all}"
