@@ -41,7 +41,7 @@ One new package under `Packages/Feature<Module>` that conforms to `FeatureModule
 
 ## Strings, accessibility, versions
 
-Strings go in the string catalogue in English and Turkish. Every control has an accessibility label, text uses Dynamic Type, and
+Strings go through `Words` and the string catalogue (`Localizable.xcstrings`) in English and Turkish. Every control has an accessibility label, text uses Dynamic Type, and
 nothing is conveyed by colour alone. The app runs on iOS 18 and later and is built for the newest: use the new API behind
 `PurlayDesign`'s modifiers, with the older path beside it.
 
