@@ -1,0 +1,436 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Ask whoever runs it to update the server." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucuyu yönetene güncellemesini söyle."
+          }
+        }
+      }
+    },
+    "Ask whoever runs the server to check its address settings." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucuyu yönetene adres ayarlarını kontrol etmesini söyle."
+          }
+        }
+      }
+    },
+    "Check your connection, then try again." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağlantını kontrol et, sonra yeniden dene."
+          }
+        }
+      }
+    },
+    "Connecting…" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağlanılıyor…"
+          }
+        }
+      }
+    },
+    "Continue in your browser to sign in securely." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Güvenle giriş yapmak için tarayıcıda devam et."
+          }
+        }
+      }
+    },
+    "Dismiss" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kapat"
+          }
+        }
+      }
+    },
+    "Give only the server's address, without a path." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yalnızca sunucu adresini yaz, yol eklemeden."
+          }
+        }
+      }
+    },
+    "It needs version %@ or newer." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ya da daha yeni bir sürüm gerekir."
+          }
+        }
+      }
+    },
+    "Leave the user name and password out of the address." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kullanıcı adı ve parolayı adrese ekleme."
+          }
+        }
+      }
+    },
+    "Loading your workspace…" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çalışma alanın yükleniyor…"
+          }
+        }
+      }
+    },
+    "Nothing to show here yet." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Burada henüz gösterilecek bir şey yok."
+          }
+        }
+      }
+    },
+    "Server Unavailable" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucuya Ulaşılamıyor"
+          }
+        }
+      }
+    },
+    "Sign In with Browser" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tarayıcıyla Oturum Aç"
+          }
+        }
+      }
+    },
+    "Something went wrong. Try again." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir şeyler ters gitti. Yeniden dene."
+          }
+        }
+      }
+    },
+    "That doesn't look like a Purlay server" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu bir Purlay sunucusuna benzemiyor"
+          }
+        }
+      }
+    },
+    "That is not an address a browser would open." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu, bir tarayıcının açacağı bir adres değil."
+          }
+        }
+      }
+    },
+    "That sign-in expired or was already used. Try again." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu oturum açma isteğinin süresi doldu veya zaten kullanıldı. Yeniden dene."
+          }
+        }
+      }
+    },
+    "The address answered, but not as Purlay does." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adres yanıt verdi, ancak Purlay gibi değil."
+          }
+        }
+      }
+    },
+    "The browser could not be opened." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tarayıcı açılamadı."
+          }
+        }
+      }
+    },
+    "The server asks you to wait a moment." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucu biraz beklemeni istiyor."
+          }
+        }
+      }
+    },
+    "The server could not be reached." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucuya ulaşılamadı."
+          }
+        }
+      }
+    },
+    "The server did not accept this sign-in." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucu bu oturum açma isteğini kabul etmedi."
+          }
+        }
+      }
+    },
+    "The server did not start a session. Try again." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucu bir oturum başlatmadı. Yeniden dene."
+          }
+        }
+      }
+    },
+    "The server gave an address this app can't use" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucu, bu uygulamanın kullanamayacağı bir adres verdi"
+          }
+        }
+      }
+    },
+    "The server refused this app's connection. Check the server's address." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucu bu uygulamanın bağlantısını reddetti. Sunucu adresini kontrol et."
+          }
+        }
+      }
+    },
+    "The session could not be saved to your Keychain." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oturum Anahtar Zinciri'ne kaydedilemedi."
+          }
+        }
+      }
+    },
+    "The sign-in did not come back the way it should. Try again." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oturum açma olması gerektiği gibi geri dönmedi. Yeniden dene."
+          }
+        }
+      }
+    },
+    "This server is older than this app supports" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu sunucu, bu uygulamanın desteklediğinden daha eski"
+          }
+        }
+      }
+    },
+    "This server must be reached over https." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu sunucuya https üzerinden ulaşılmalı."
+          }
+        }
+      }
+    },
+    "This server needs a newer Purlay" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu sunucu daha yeni bir Purlay gerektiriyor"
+          }
+        }
+      }
+    },
+    "Too many attempts. Wait a moment and try again." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çok fazla deneme yapıldı. Biraz bekleyip yeniden dene."
+          }
+        }
+      }
+    },
+    "Too many requests" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çok fazla istek"
+          }
+        }
+      }
+    },
+    "Try Again" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeniden Dene"
+          }
+        }
+      }
+    },
+    "Type the address of your Purlay server." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Purlay sunucunun adresini yaz."
+          }
+        }
+      }
+    },
+    "Unsent messages can't be saved on this device right now. Sending still works." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gönderilmemiş mesajlar şu anda bu cihaza kaydedilemiyor. Gönderme yine de çalışıyor."
+          }
+        }
+      }
+    },
+    "Update Purlay, then try again." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Purlay'i güncelle, sonra yeniden dene."
+          }
+        }
+      }
+    },
+    "Use a web address, starting with https." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https ile başlayan bir web adresi kullan."
+          }
+        }
+      }
+    },
+    "Waiting for the Browser…" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tarayıcı bekleniyor…"
+          }
+        }
+      }
+    },
+    "You were signed out by the server. Sign in again." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucu oturumunu kapattı. Yeniden oturum aç."
+          }
+        }
+      }
+    },
+    "You were signed out." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oturumun kapatıldı."
+          }
+        }
+      }
+    },
+    "You're Signed In" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oturum Açtın"
+          }
+        }
+      }
+    },
+    "Your session ends on %@. Sign in again before then to stay connected." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oturumun %@ tarihinde sona eriyor. Bağlı kalmak için o zamandan önce yeniden oturum aç."
+          }
+        }
+      }
+    },
+    "Your session has expired. Sign in again." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oturumunun süresi doldu. Yeniden oturum aç."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

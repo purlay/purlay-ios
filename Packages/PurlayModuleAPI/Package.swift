@@ -6,7 +6,7 @@ let strict: [SwiftSetting] = [.treatAllWarnings(as: .error)]
 
 let package = Package(
     name: "PurlayModuleAPI",
-    platforms: [.iOS(.v18), .macOS(.v15)],
+    platforms: [.iOS(.v18), .macOS(.v26)],
     products: [.library(name: "PurlayModuleAPI", targets: ["PurlayModuleAPI"])],
     targets: [
         .target(name: "PurlayModuleAPI", swiftSettings: strict),
