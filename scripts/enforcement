@@ -60,6 +60,32 @@ check() { # root
     echo "FAIL: the macOS platform is not one number:" >&2
     grep -rnE --include=Package.swift '\.macOS\(\.v[0-9]+\)' "$root/Packages" >&2; failed=1
   fi
+  # Every string of the catalogue is translated into every language the project declares (knownRegions).
+  if ! python3 - "$root/App/Resources/Localizable.xcstrings" "$root/project.yml" <<'PY'
+import json, re, sys
+catalogue = json.load(open(sys.argv[1]))
+declared = re.search(r"knownRegions: \[(.*?)\]", open(sys.argv[2]).read())
+languages = [x.strip() for x in declared.group(1).split(",")] if declared else []
+problems = []
+if catalogue.get("sourceLanguage") != "en":
+    problems.append("the catalogue's source language is not en")
+for key, entry in catalogue["strings"].items():
+    for language in languages:
+        if language == "en":
+            continue
+        unit = entry.get("localizations", {}).get(language, {}).get("stringUnit", {})
+        if unit.get("state") != "translated" or not unit.get("value", "").strip():
+            problems.append("not translated into %s: %s" % (language, key))
+for problem in problems:
+    print("FAIL: " + problem, file=sys.stderr)
+sys.exit(1 if problems else 0)
+PY
+  then failed=1; fi
+  # A button is built from a text label, never from a LocalizedStringResource: on the simulator `Button(Words.x)` showed English on a
+  # Turkish device while `Text(Words.x)` beside it was Turkish.
+  if grep -rnE --include='*.swift' 'Button\(Words\.' "$root/App"; then
+    echo "FAIL: a button built from a LocalizedStringResource (use a Text label)" >&2; failed=1
+  fi
   # A required-reason API the code uses is declared, with its category, in the privacy manifest (App Store refuses a build otherwise).
   manifest="$root/App/Resources/PrivacyInfo.xcprivacy"
   [ -f "$manifest" ] || { echo "FAIL: there is no privacy manifest" >&2; failed=1; }
@@ -111,5 +137,17 @@ plant "an unapproved dependency" Packages/PurlayDesign/Package.swift '// .packag
 plant "an unchecked Sendable" App/PurlayApp.swift "final class Leaky: @unchecked Sendable {}"
 plant "a force try" App/PurlayApp.swift 'let leaked = try! Data(contentsOf: URL(fileURLWithPath: "/"))'
 plant "a second macOS number" Packages/PurlayDesign/Package.swift "// .macOS(.v15)"
+plant "a button built from a LocalizedStringResource" App/Root/RootView.swift 'let leaked = Button(Words.tryAgain) {}'
 plant "an undeclared required-reason API" App/PurlayApp.swift 'let booted = ProcessInfo.processInfo.systemUptime'
+# A string with no translation: the entry's Turkish is taken out of a copy.
+copy="$(mktemp -d)"
+rsync -a --exclude .build --exclude .swiftpm --exclude '*.xcodeproj' App Packages Config project.yml "$copy"/
+python3 - "$copy/App/Resources/Localizable.xcstrings" <<'PY'
+import json, sys
+catalogue = json.load(open(sys.argv[1]))
+del catalogue["strings"]["Try Again"]["localizations"]["tr"]
+json.dump(catalogue, open(sys.argv[1], "w"), ensure_ascii=False)
+PY
+if check "$copy" >/dev/null 2>&1; then echo "  NOT REFUSED  a string with no translation" >&2; fail=1; else echo "  refused      a string with no translation"; fi
+rm -rf "$copy"
 exit $fail
