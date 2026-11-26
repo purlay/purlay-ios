@@ -49,7 +49,7 @@ scripts/verify simulator                    # the tests on a simulator
 
 **Environment (Debug builds only):** `PURLAY_DEV_SERVER` (a server address, plain HTTP allowed for a local one),
 `PURLAY_DEV_SESSION` (a stored session's cookie value), `PURLAY_DEV_RESET=1` (forget the stored session first).
-`GITHUB_TOKEN="$(gh auth token)"` is needed locally for `scripts/check-shared-files`, because the repositories are private.
+The repositories are public, so `scripts/check-shared-files` needs no token, but an anonymous address may make 60 GitHub requests an hour and one run makes ten: `GITHUB_TOKEN="$(gh auth token)"` lifts the limit.
 
 ## Verification
 

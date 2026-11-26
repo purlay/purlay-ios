@@ -6,8 +6,8 @@
 3. `make verify` runs what a pull request needs (rules, format and package tests, the app built for iOS); `make verify-security` scans
    the history for secrets; `make verify-all` adds the simulator. One lane alone: `scripts/verify rules|packages|build|simulator|security`.
    Compiled code is cached by content (in `~/Library/Caches/dev.purlay`, or `PURLAY_CACHE_DIR`), so the second run is much faster than the first.
-4. `scripts/check-shared-files` reads the owners' files from GitHub, and the repositories are private: run it as
-   `GITHUB_TOKEN="$(gh auth token)" scripts/verify rules`. Offline, `PURLAY_OFFLINE=1` skips only that check.
+4. `scripts/check-shared-files` reads the owners' files from GitHub. The repositories are public, so it needs no token, but an anonymous address may make 60 requests an hour and one run makes ten: run it as
+   `GITHUB_TOKEN="$(gh auth token)" scripts/verify rules` to lift the limit. Offline, `PURLAY_OFFLINE=1` skips only that check.
 
 ## Against a local server
 
