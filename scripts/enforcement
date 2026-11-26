@@ -60,6 +60,21 @@ check() { # root
     echo "FAIL: the macOS platform is not one number:" >&2
     grep -rnE --include=Package.swift '\.macOS\(\.v[0-9]+\)' "$root/Packages" >&2; failed=1
   fi
+  # A required-reason API the code uses is declared, with its category, in the privacy manifest (App Store refuses a build otherwise).
+  manifest="$root/App/Resources/PrivacyInfo.xcprivacy"
+  [ -f "$manifest" ] || { echo "FAIL: there is no privacy manifest" >&2; failed=1; }
+  while IFS='|' read -r category pattern; do
+    if grep -rlE --include='*.swift' "$pattern" "$root/App" "$root/Packages" | grep -v '/\.build/' | grep -q .; then
+      grep -q "NSPrivacyAccessedAPICategory$category" "$manifest" 2>/dev/null \
+        || { echo "FAIL: code uses a $category API the privacy manifest does not declare" >&2; failed=1; }
+    fi
+  done <<'APIS'
+UserDefaults|UserDefaults
+FileTimestamp|creationDate|modificationDate|fileModificationDate|fileCreationDate|attributesOfItem
+SystemBootTime|systemUptime|mach_absolute_time
+DiskSpace|volumeAvailableCapacity|volumeTotalCapacity|systemFreeSize|statfs|getattrlist
+ActiveKeyboards|activeInputModes
+APIS
   return $failed
 }
 
@@ -96,4 +111,5 @@ plant "an unapproved dependency" Packages/PurlayDesign/Package.swift '// .packag
 plant "an unchecked Sendable" App/PurlayApp.swift "final class Leaky: @unchecked Sendable {}"
 plant "a force try" App/PurlayApp.swift 'let leaked = try! Data(contentsOf: URL(fileURLWithPath: "/"))'
 plant "a second macOS number" Packages/PurlayDesign/Package.swift "// .macOS(.v15)"
+plant "an undeclared required-reason API" App/PurlayApp.swift 'let booted = ProcessInfo.processInfo.systemUptime'
 exit $fail
