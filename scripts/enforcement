@@ -55,6 +55,11 @@ check() { # root
       "$root/App" "$root/Packages" | grep -v '/\.build/' | grep -v 'enforcement-allow'; then
     echo "FAIL: a concurrency escape or code that can trap" >&2; failed=1
   fi
+  # One macOS number: purlay-swift asks for it, so every package that depends on it must, and the others say the same.
+  if [ "$(grep -rhoE --include=Package.swift '\.macOS\(\.v[0-9]+\)' "$root/Packages" | sort -u | wc -l | tr -d ' ')" != "1" ]; then
+    echo "FAIL: the macOS platform is not one number:" >&2
+    grep -rnE --include=Package.swift '\.macOS\(\.v[0-9]+\)' "$root/Packages" >&2; failed=1
+  fi
   return $failed
 }
 
@@ -77,6 +82,11 @@ plant() { # name, file (relative), line
   rm -rf "$copy"
 }
 check . >/dev/null
+# The copies the violations are planted in must hold every rule before anything is planted, or a refusal would prove nothing.
+clean="$(mktemp -d)"
+rsync -a --exclude .build --exclude .swiftpm --exclude '*.xcodeproj' App Packages Config project.yml "$clean"/
+check "$clean" >/dev/null 2>&1 || { echo "  the unmodified copy already fails a rule: the demonstration proves nothing" >&2; fail=1; }
+rm -rf "$clean"
 plant "a second iOS floor" Packages/PurlayDesign/Package.swift "// .iOS(.v17)"
 plant "a second purlay-swift pin" Packages/PurlayDesign/Package.swift '// purlay-swift", from: "9.9.9"'
 plant "#available outside PurlayDesign" App/PurlayApp.swift 'func gated() { if #available(iOS 26, *) {} }'
@@ -85,4 +95,5 @@ plant "a feature depending on a feature" Packages/FeatureA/Package.swift '.packa
 plant "an unapproved dependency" Packages/PurlayDesign/Package.swift '// .package(url: "https://example.test/Alamofire", from: "1.0.0")'
 plant "an unchecked Sendable" App/PurlayApp.swift "final class Leaky: @unchecked Sendable {}"
 plant "a force try" App/PurlayApp.swift 'let leaked = try! Data(contentsOf: URL(fileURLWithPath: "/"))'
+plant "a second macOS number" Packages/PurlayDesign/Package.swift "// .macOS(.v15)"
 exit $fail
