@@ -30,7 +30,8 @@ struct WordsTests {
                 .sessionEndsSoon(Date(timeIntervalSince1970: 0)),
                 .storageProblem, .originMismatch, .loadFailed,
             ]
-        return Words.fixed + problems.flatMap { [Words.problem($0).title, Words.problem($0).detail] }
+        return Words.fixed + [Words.backToWorkspace("Acme"), Words.switchWorkspace("Acme")]
+            + problems.flatMap { [Words.problem($0).title, Words.problem($0).detail] }
             + signIns.compactMap(Words.signIn) + notices.compactMap(Words.notice)
     }
 

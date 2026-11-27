@@ -7,7 +7,7 @@ enum RootScreen: Equatable {
     case busy(Busy)
     case problem(ServerProblem)
     case signIn
-    /// Signed in and the first screen has loaded. The module screens come with the shell; until then this says so.
+    /// Signed in and the workspace shell can present the destinations this build supports.
     case ready
 
     enum Busy: Equatable {

@@ -9,14 +9,15 @@ Swift 6, SwiftUI, Liquid Glass from iOS 26 and a system material before; iOS 18 
 - **Stage:** foundation. The project, package graph, native sign-in and CI are in place and tested against a real server. Nothing is released.
 - **Works:** launch and handshake, sign-in through the system browser (PKCE), resuming a stored session, a screen per phase of
   the shared `AppModel` (connecting, loading, sign-in, and a problem screen per kind of server problem with Try Again), every
-  sentence in English and Turkish, notices the model gives (dismissable), a privacy manifest, the module registry (as a package, not
-  yet used by the app), the glass surface seam, the app icon (the Purlay mark, drawn from `Design/purlay.svg` by `scripts/icon`).
-- **Not yet:** any screen after sign-in (it shows "You're Signed In"), a feature package, APNs, a release path. Next slice is in the list below.
+  sentence in English and Turkish, dismissible notices, a privacy manifest, the glass surface seam and the app icon.
+  The signed-in shell switches workspaces and uses system tabs on iPhone and a sidebar in regular width. Chat opens in the browser.
+- **Not yet:** a native chat feed, APNs and a release path.
 - **Known problems:** see [tech debt](architecture/tech-debt.md); the one that blocks a release is TD-005 (signing and the release path).
 - **Seen in the simulator, 2026-11-26** (a build signed ad hoc, a server that answers only the handshake): connecting; loading;
   the problem screen in English (light) and in Turkish (dark, at the largest accessibility text size, where it scrolls and the
   button wraps); sign-in in English and Turkish; the notice banner in English and Turkish.
-  **Not verified:** the signed-in placeholder (needs a whole server), VoiceOver by ear, scrolling by touch, iPad.
+- **Shell seen in the simulator, 2026-11-27:** iPhone on iOS 18.5 and iPad on iOS 27.0, against a local fixture.
+  The UI test switched from a Chat workspace to a workspace without Chat and back. VoiceOver itself was not exercised.
 - **Baseline, measured 2026-11-26** with `scripts/verify` (all lanes, warm cache, 20 s): rules, format, the packages' tests on
   macOS, the app built for iOS, and the tests on a simulator (28 of the app's own) all pass; the secret scan found no leak in the history.
   The sign-in UI tests skip themselves without a server, so they were not run.
@@ -32,9 +33,8 @@ Swift 6, SwiftUI, Liquid Glass from iOS 26 and a system material before; iOS 18 
 
 ## Next slices
 
-1. FR-020: the shell. Instantiate the registry, adaptive navigation, workspace switcher.
-2. FR-021, FR-022: the chat slice on the existing engine, after the local-store spike (A-003).
-3. FR-023: sign out, on this device and everywhere.
+1. FR-021, FR-022: the chat slice on the existing engine, after the local-store spike (A-003).
+2. FR-023: sign out, on this device and everywhere.
 
 ## Quick start
 

@@ -12,7 +12,7 @@
 </div>
 
 > **Status: foundation.** The project, package graph, native sign-in and CI are in place and tested against a real
-> server. The screens are next, beginning with a vertical slice of chat. Nothing is released yet.
+> server. The signed-in app has adaptive navigation and workspace switching. The native chat feed is next.
 
 ## What it is
 

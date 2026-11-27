@@ -40,9 +40,10 @@ purlay-swift  →  PurlayContract · PurlayTokens · PurlayKit · PurlayTestSupp
 Rules, each held by `scripts/enforcement` ([conventions](conventions.md)): dependencies point down; a feature never imports
 or depends on another feature; no third-party dependency beyond `purlay-swift`; OS-version checks only in `PurlayDesign`.
 
-No `Feature*` package exists yet. The screen after sign-in is a placeholder ("Signed in"); everything the engine can do
-(channels, messages, threads, attention, settings) is in `PurlayKit` and has no iOS screen. Adding a module is one package
-under `Packages/Feature<Module>` plus one line where the `ModuleRegistry` is built; the registry is not yet instantiated in `App`.
+The signed-in shell uses system tabs in compact width and a split-view sidebar in regular width. It selects memberships
+through `PurlayKit` and registers the Chat destination only where the active workspace can use it. Chat opens the selected
+workspace in the browser until FR-021. A workspace with no available feature still shows the workspace selector.
+Adding a module takes one package under `Packages/Feature<Module>` and a registration in the app's `ModuleRegistry`.
 
 ## 3. How the app talks to the server
 
@@ -86,7 +87,7 @@ haptics, motion and component modifiers are added to `PurlayDesign` as the first
 
 ## 6. What is next (build order)
 
-1. **Shell:** instantiate the registry, adaptive navigation (tab bar on iPhone, sidebar on iPad), workspace switcher.
+1. **Shell (built):** adaptive navigation, module registry and workspace switcher.
 2. **Chat vertical slice:** channel list, feed, composer, optimistic send, threads, on top of the existing engine.
 3. **Inbox, search, profile and settings, Deep Work and quiet hours.**
 4. **APNs:** needs a server endpoint and a sender in the push worker (the server speaks Web Push only, D-126), then the app side.
