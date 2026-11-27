@@ -1,6 +1,156 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%lld unread" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld okunmamış"
+          }
+        }
+      }
+    },
+    "Message unavailable" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mesaj kullanılamıyor"
+          }
+        }
+      }
+    },
+    "Unknown Sender" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bilinmeyen Gönderen"
+          }
+        }
+      }
+    },
+    "Jump to Latest" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Son Mesaja Git"
+          }
+        }
+      }
+    },
+    "Couldn’t load earlier messages." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Önceki mesajlar yüklenemedi."
+          }
+        }
+      }
+    },
+    "Loading earlier messages…" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Önceki mesajlar yükleniyor…"
+          }
+        }
+      }
+    },
+    "Load Earlier Messages" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Önceki Mesajları Yükle"
+          }
+        }
+      }
+    },
+    "Couldn’t Load Messages" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mesajlar Yüklenemedi"
+          }
+        }
+      }
+    },
+    "Loading messages…" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mesajlar yükleniyor…"
+          }
+        }
+      }
+    },
+    "No Messages Yet" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Henüz Mesaj Yok"
+          }
+        }
+      }
+    },
+    "Channel Unavailable" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanal Kullanılamıyor"
+          }
+        }
+      }
+    },
+    "No Joined Channels" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Katıldığın Kanal Yok"
+          }
+        }
+      }
+    },
+    "Direct Messages" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğrudan Mesajlar"
+          }
+        }
+      }
+    },
+    "Channels" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanallar"
+          }
+        }
+      }
+    },
+    "Starred" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yıldızlı"
+          }
+        }
+      }
+    },
     "Back to %@" : {
       "localizations" : {
         "tr" : {
@@ -47,16 +197,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kullanılabilir Modül Yok"
-          }
-        }
-      }
-    },
-    "Open Chat in Browser" : {
-      "localizations" : {
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sohbeti Tarayıcıda Aç"
           }
         }
       }

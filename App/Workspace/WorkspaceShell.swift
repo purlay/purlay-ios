@@ -8,12 +8,11 @@ import SwiftUI
 @MainActor
 enum WorkspaceDestinations {
     static func features(for model: AppModel) -> [any FeatureModule] {
-        guard let workspace = model.workspace, let origin = model.webFrontDoor else { return [] }
-        let workspaceURL = origin.appending(component: "w").appending(component: workspace.slug)
+        guard let workspace = model.workspace else { return [] }
         let registry = ModuleRegistry([
-            ChatFeature(title: Words.chat, browserAction: Words.openChatInBrowser, workspaceURL: workspaceURL)
+            ChatFeature(model: model, workspace: workspace.id, title: Words.chat, words: Words.chatStrings)
         ])
-        let allowed: Set<ModuleID> = model.chatAvailable ? [.chat] : []
+        let allowed: Set<ModuleID> = ChatFeature.isAvailable(model: model, workspace: workspace.id) ? [.chat] : []
         return registry.enabled(allowed: allowed)
     }
 }
@@ -50,6 +49,7 @@ struct WorkspaceShell: View {
                             .navigationTitle(Text(feature.title))
                             .toolbar { toolbar }
                     }
+                    .id(ObjectIdentifier(sessions.active))
                 } label: {
                     featureLabel(feature)
                 }
@@ -69,8 +69,11 @@ struct WorkspaceShell: View {
             .toolbar { toolbar }
         } detail: {
             if let feature = features.first(where: { $0.id == selected }) ?? features.first {
-                feature.makeRoot()
-                    .navigationTitle(Text(feature.title))
+                NavigationStack {
+                    feature.makeRoot()
+                        .navigationTitle(Text(feature.title))
+                }
+                .id(ObjectIdentifier(sessions.active))
             }
         }
     }

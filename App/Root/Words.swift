@@ -1,3 +1,4 @@
+import FeatureChat
 import Foundation
 import PurlayContract
 import PurlayKit
@@ -15,7 +16,32 @@ enum Words {
     static let dismiss = LocalizedStringResource("Dismiss")
     static let workspace = LocalizedStringResource("Workspace")
     static let chat = LocalizedStringResource("Chat")
-    static let openChatInBrowser = LocalizedStringResource("Open Chat in Browser")
+    static let starred = LocalizedStringResource("Starred")
+    static let channels = LocalizedStringResource("Channels")
+    static let conversations = LocalizedStringResource("Direct Messages")
+    static let noChannels = LocalizedStringResource("No Joined Channels")
+    static let channelUnavailable = LocalizedStringResource("Channel Unavailable")
+    static let noMessages = LocalizedStringResource("No Messages Yet")
+    static let loadingMessages = LocalizedStringResource("Loading messages…")
+    static let messagesFailed = LocalizedStringResource("Couldn’t Load Messages")
+    static let loadEarlier = LocalizedStringResource("Load Earlier Messages")
+    static let loadingEarlier = LocalizedStringResource("Loading earlier messages…")
+    static let earlierFailed = LocalizedStringResource("Couldn’t load earlier messages.")
+    static let jumpToLatest = LocalizedStringResource("Jump to Latest")
+    static let unknownSender = LocalizedStringResource("Unknown Sender")
+    static let messageUnavailable = LocalizedStringResource("Message unavailable")
+    static func unread(_ count: Int) -> LocalizedStringResource {
+        LocalizedStringResource("\(count) unread")
+    }
+
+    static let chatStrings = ChatStrings(
+        starred: starred, channels: channels, conversations: conversations,
+        noChannels: noChannels, channelUnavailable: channelUnavailable,
+        noMessages: noMessages, loadingMessages: loadingMessages, messagesFailed: messagesFailed,
+        loadEarlier: loadEarlier, loadingEarlier: loadingEarlier, earlierFailed: earlierFailed,
+        jumpToLatest: jumpToLatest, tryAgain: tryAgain, unknownSender: unknownSender,
+        messageUnavailable: messageUnavailable, unread: unread)
+
     static let noWorkspaceModules = LocalizedStringResource("No Modules Available")
     static let noWorkspaces = LocalizedStringResource("No Workspaces Yet")
     static let twoFactorRequired = LocalizedStringResource("Two-Factor Authentication Required")
@@ -34,8 +60,9 @@ enum Words {
     /// The fixed sentences of the screens, so a test can look at each in every language.
     static let fixed: [LocalizedStringResource] = [
         connecting, waitingForBrowser, loadingWorkspace, signInPrompt, signInButton, tryAgain, dismiss, generic,
-        workspace, chat, openChatInBrowser, noWorkspaceModules, noWorkspaces, twoFactorRequired,
-        setUpTwoFactor,
+        workspace, chat, noWorkspaceModules, noWorkspaces, twoFactorRequired,
+        setUpTwoFactor, starred, channels, conversations, noChannels, channelUnavailable, noMessages, loadingMessages,
+        messagesFailed, loadEarlier, loadingEarlier, earlierFailed, jumpToLatest, unknownSender, messageUnavailable,
     ]
 
     /// What stands between the app and the server: the title, and what the person can do about it.
@@ -96,6 +123,7 @@ enum Words {
     static func notice(_ kind: Notice.Kind) -> LocalizedStringResource? {
         switch kind {
         case .invalidAddress(let problem): return address(problem)
+        case .loadFailed: return nil  // Native history presents its own retry alongside the affected data.
         case .signInFailed(let error): return signIn(error)
         case .sessionExpired: return LocalizedStringResource("Your session has expired. Sign in again.")
         case .sessionEndedByServer:

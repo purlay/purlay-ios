@@ -32,9 +32,8 @@ final class WorkspaceShellUITests: XCTestCase {
             ? app.descendants(matching: .any)["workspace.sidebar.chat"].firstMatch
             : app.tabBars.buttons["Chat"]
         XCTAssertTrue(chatDestination.exists, "the Chat destination did not use the appropriate navigation")
-        let browser = app.descendants(matching: .any)
-            .matching(NSPredicate(format: "label == %@", "Open Chat in Browser")).firstMatch
-        XCTAssertTrue(browser.exists)
+        let channels = app.descendants(matching: .any)["chat.channels"].firstMatch
+        XCTAssertTrue(channels.exists)
         capture("Chat")
 
         switcher.tap()
@@ -45,12 +44,12 @@ final class WorkspaceShellUITests: XCTestCase {
         XCTAssertTrue(empty.waitForExistence(timeout: 10), "the core-only workspace did not show its empty state")
         XCTAssertTrue(switcher.label.contains(core))
         XCTAssertFalse(chatDestination.exists)
-        XCTAssertFalse(browser.exists)
+        XCTAssertFalse(channels.exists)
         capture("Core workspace")
 
         switcher.tap()
         app.buttons[chat].firstMatch.tap()
-        XCTAssertTrue(browser.waitForExistence(timeout: 10))
+        XCTAssertTrue(channels.waitForExistence(timeout: 10))
         XCTAssertTrue(switcher.label.contains(chat))
     }
 

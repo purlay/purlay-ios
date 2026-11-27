@@ -28,9 +28,9 @@ struct WordsTests {
             addresses.map { .invalidAddress($0) } + signIns.map { .signInFailed($0) } + [
                 .sessionExpired, .sessionEndedByServer, .signedOutElsewhere,
                 .sessionEndsSoon(Date(timeIntervalSince1970: 0)),
-                .storageProblem, .originMismatch, .loadFailed,
+                .storageProblem, .originMismatch, .readFailed,
             ]
-        return Words.fixed + [Words.backToWorkspace("Acme"), Words.switchWorkspace("Acme")]
+        return Words.fixed + [Words.backToWorkspace("Acme"), Words.switchWorkspace("Acme"), Words.unread(2)]
             + problems.flatMap { [Words.problem($0).title, Words.problem($0).detail] }
             + signIns.compactMap(Words.signIn) + notices.compactMap(Words.notice)
     }
@@ -65,7 +65,7 @@ struct WordsTests {
 
     @Test("a refusal these screens have no sentence for is said plainly, never as the case's name")
     func generic() throws {
-        let words = try #require(Words.notice(.loadFailed))
+        let words = try #require(Words.notice(.readFailed))
         #expect(text(words, in: "en") == "Something went wrong. Try again.")
     }
 }
