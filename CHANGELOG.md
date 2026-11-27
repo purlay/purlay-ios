@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Send text messages from the native channel feed and retry a failed send in place.
+
 - Open joined channels from Chat and read their native message history. Load earlier messages without leaving the feed.
 
 - Switch between workspaces from the signed-in app. Available destinations appear in iPhone tabs and the iPad sidebar.

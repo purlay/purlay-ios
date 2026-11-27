@@ -11,12 +11,82 @@
         }
       }
     },
+    "Couldn’t send message." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mesaj gönderilemedi."
+          }
+        }
+      }
+    },
+    "Message is too long." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mesaj çok uzun."
+          }
+        }
+      }
+    },
     "Message unavailable" : {
       "localizations" : {
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mesaj kullanılamıyor"
+          }
+        }
+      }
+    },
+    "Only workspace owners and admins can post here." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Burada yalnızca çalışma alanı sahipleri ve yöneticileri mesaj gönderebilir."
+          }
+        }
+      }
+    },
+    "Retry Message" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeniden Gönder"
+          }
+        }
+      }
+    },
+    "Send Message" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mesajı Gönder"
+          }
+        }
+      }
+    },
+    "Sending…" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gönderiliyor…"
+          }
+        }
+      }
+    },
+    "Sent" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gönderildi"
           }
         }
       }
@@ -597,6 +667,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tarayıcı bekleniyor…"
+          }
+        }
+      }
+    },
+    "Write a message" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mesaj yaz"
           }
         }
       }

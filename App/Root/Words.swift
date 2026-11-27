@@ -30,6 +30,14 @@ enum Words {
     static let jumpToLatest = LocalizedStringResource("Jump to Latest")
     static let unknownSender = LocalizedStringResource("Unknown Sender")
     static let messageUnavailable = LocalizedStringResource("Message unavailable")
+    static let writeMessage = LocalizedStringResource("Write a message")
+    static let sendMessage = LocalizedStringResource("Send Message")
+    static let messageTooLong = LocalizedStringResource("Message is too long.")
+    static let channelReadOnly = LocalizedStringResource("Only workspace owners and admins can post here.")
+    static let sendingMessage = LocalizedStringResource("Sending…")
+    static let sentMessage = LocalizedStringResource("Sent")
+    static let messageSendFailed = LocalizedStringResource("Couldn’t send message.")
+    static let retryMessage = LocalizedStringResource("Retry Message")
     static func unread(_ count: Int) -> LocalizedStringResource {
         LocalizedStringResource("\(count) unread")
     }
@@ -40,7 +48,10 @@ enum Words {
         noMessages: noMessages, loadingMessages: loadingMessages, messagesFailed: messagesFailed,
         loadEarlier: loadEarlier, loadingEarlier: loadingEarlier, earlierFailed: earlierFailed,
         jumpToLatest: jumpToLatest, tryAgain: tryAgain, unknownSender: unknownSender,
-        messageUnavailable: messageUnavailable, unread: unread)
+        messageUnavailable: messageUnavailable,
+        writeMessage: writeMessage, sendMessage: sendMessage, messageTooLong: messageTooLong,
+        channelReadOnly: channelReadOnly, sendingMessage: sendingMessage, sentMessage: sentMessage,
+        messageSendFailed: messageSendFailed, retryMessage: retryMessage, unread: unread)
 
     static let noWorkspaceModules = LocalizedStringResource("No Modules Available")
     static let noWorkspaces = LocalizedStringResource("No Workspaces Yet")
@@ -63,6 +74,8 @@ enum Words {
         workspace, chat, noWorkspaceModules, noWorkspaces, twoFactorRequired,
         setUpTwoFactor, starred, channels, conversations, noChannels, channelUnavailable, noMessages, loadingMessages,
         messagesFailed, loadEarlier, loadingEarlier, earlierFailed, jumpToLatest, unknownSender, messageUnavailable,
+        writeMessage, sendMessage, messageTooLong, channelReadOnly, sendingMessage, sentMessage, messageSendFailed,
+        retryMessage,
     ]
 
     /// What stands between the app and the server: the title, and what the person can do about it.
