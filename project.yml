@@ -15,7 +15,7 @@ configFiles:
 packages:
   PurlaySwift:
     url: https://github.com/purlay/purlay-swift
-    exactVersion: 0.2.0
+    exactVersion: 0.2.2
   PurlayModuleAPI: { path: Packages/PurlayModuleAPI }
   PurlayDesign: { path: Packages/PurlayDesign }
   FeatureChat: { path: Packages/FeatureChat }
