@@ -8,7 +8,7 @@ let package = Package(
     name: "PurlayDesign",
     platforms: [.iOS(.v18), .macOS(.v26)],
     products: [.library(name: "PurlayDesign", targets: ["PurlayDesign"])],
-    dependencies: [.package(url: "https://github.com/purlay/purlay-swift", from: "0.2.0")],
+    dependencies: [.package(url: "https://github.com/purlay/purlay-swift", exact: "0.2.0")],
     targets: [
         .target(
             name: "PurlayDesign", dependencies: [.product(name: "PurlayTokens", package: "purlay-swift")],
