@@ -9,7 +9,7 @@ let package = Package(
     products: [.library(name: "FeatureChat", targets: ["FeatureChat"])],
     dependencies: [
         .package(path: "../PurlayModuleAPI"),
-        .package(url: "https://github.com/purlay/purlay-swift", exact: "0.3.0"),
+        .package(url: "https://github.com/purlay/purlay-swift", exact: "0.3.1"),
     ],
     targets: [
         .target(
