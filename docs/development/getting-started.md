@@ -47,6 +47,11 @@ Use a fresh simulator and a test member whose first workspace allows Chat and wh
 Run the `PurlayUITests` scheme on iPhone and iPad. The test checks the tab or sidebar, switches to the empty
 workspace and returns to Chat. Its result bundle contains screenshots of both states.
 
+`NativeChatUITests` uses `TEST_RUNNER_PURLAY_CHAT_UITEST_SERVER` and `TEST_RUNNER_PURLAY_CHAT_UITEST_SESSION`.
+Its fixture supplies an unread joined channel, two recent messages and an earlier page. The fixture refuses the first
+earlier-page read and the first read of the empty second channel, so the test can exercise both retry controls. Use separate
+fixture instances for iPhone and iPad so each run starts with the same responses.
+
 ## Looking at the screens
 
 `scripts/verify` builds with `CODE_SIGNING_ALLOWED=NO`, and an unsigned app cannot use the Keychain on a simulator: it starts signed out
