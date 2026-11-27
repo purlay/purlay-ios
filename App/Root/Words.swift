@@ -13,15 +13,29 @@ enum Words {
     static let signInButton = LocalizedStringResource("Sign In with Browser")
     static let tryAgain = LocalizedStringResource("Try Again")
     static let dismiss = LocalizedStringResource("Dismiss")
-    static let signedInTitle = LocalizedStringResource("You're Signed In")
-    static let signedInDetail = LocalizedStringResource("Nothing to show here yet.")
+    static let workspace = LocalizedStringResource("Workspace")
+    static let chat = LocalizedStringResource("Chat")
+    static let openChatInBrowser = LocalizedStringResource("Open Chat in Browser")
+    static let noWorkspaceModules = LocalizedStringResource("No Modules Available")
+    static let noWorkspaces = LocalizedStringResource("No Workspaces Yet")
+    static let twoFactorRequired = LocalizedStringResource("Two-Factor Authentication Required")
+    static let setUpTwoFactor = LocalizedStringResource("Set Up Two-Factor Authentication")
+    static func switchWorkspace(_ current: String) -> LocalizedStringResource {
+        LocalizedStringResource("Switch Workspace, \(current)")
+    }
+
+    static func backToWorkspace(_ name: String) -> LocalizedStringResource {
+        LocalizedStringResource("Back to \(name)")
+    }
+
     /// For a refusal that has no sentence of its own on these screens: said plainly, never as a description of the error.
     static let generic = LocalizedStringResource("Something went wrong. Try again.")
 
     /// The fixed sentences of the screens, so a test can look at each in every language.
     static let fixed: [LocalizedStringResource] = [
-        connecting, waitingForBrowser, loadingWorkspace, signInPrompt, signInButton, tryAgain, dismiss, signedInTitle,
-        signedInDetail, generic,
+        connecting, waitingForBrowser, loadingWorkspace, signInPrompt, signInButton, tryAgain, dismiss, generic,
+        workspace, chat, openChatInBrowser, noWorkspaceModules, noWorkspaces, twoFactorRequired,
+        setUpTwoFactor,
     ]
 
     /// What stands between the app and the server: the title, and what the person can do about it.

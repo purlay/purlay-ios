@@ -18,6 +18,7 @@ packages:
     from: 0.2.0
   PurlayModuleAPI: { path: Packages/PurlayModuleAPI }
   PurlayDesign: { path: Packages/PurlayDesign }
+  FeatureChat: { path: Packages/FeatureChat }
 targets:
   Purlay:
     type: application
@@ -33,6 +34,7 @@ targets:
         product: PurlayKit
       - package: PurlayModuleAPI
       - package: PurlayDesign
+      - package: FeatureChat
   PurlayTests:
     type: bundle.unit-test
     platform: iOS
@@ -74,6 +76,7 @@ schemes:
         - PurlayTests
         - package: PurlayDesign/PurlayDesignTests
         - package: PurlayModuleAPI/PurlayModuleAPITests
+        - package: FeatureChat/FeatureChatTests
   # Signs in through the system browser against a real server; skipped without one (docs/development/getting-started.md).
   PurlayUITests:
     build:

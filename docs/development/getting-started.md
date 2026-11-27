@@ -39,6 +39,14 @@ TEST_RUNNER_PURLAY_UITEST_SESSION="$(curl -sk -i 'https://localhost:4590/__demo/
 Approving inside the system browser's page is not driven: its address bar is read-only and the simulator does not share
 Safari's cookies with it. The server's half of that step runs against a real server in purlay-swift's contract tests.
 
+## The workspace shell on iPhone and iPad
+
+`WorkspaceShellUITests` uses the same Debug session fixture as the sign-in test. Give it the four
+`TEST_RUNNER_PURLAY_SHELL_UITEST_*` variables `SERVER`, `SESSION`, `CHAT_WORKSPACE` and `CORE_WORKSPACE`.
+Use a fresh simulator and a test member whose first workspace allows Chat and whose second membership omits Chat.
+Run the `PurlayUITests` scheme on iPhone and iPad. The test checks the tab or sidebar, switches to the empty
+workspace and returns to Chat. Its result bundle contains screenshots of both states.
+
 ## Looking at the screens
 
 `scripts/verify` builds with `CODE_SIGNING_ALLOWED=NO`, and an unsigned app cannot use the Keychain on a simulator: it starts signed out

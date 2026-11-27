@@ -24,7 +24,7 @@ final class SignInFlowTests: XCTestCase {
         app.launchEnvironment["PURLAY_DEV_RESET"] = "1"
         app.launch()
 
-        let signIn = app.buttons["Sign in"]
+        let signIn = app.buttons["Sign In with Browser"]
         XCTAssertTrue(signIn.waitForExistence(timeout: timeout), "the signed-out screen never appeared")
         signIn.tap()
 
@@ -48,8 +48,12 @@ final class SignInFlowTests: XCTestCase {
         app.launchEnvironment["PURLAY_DEV_SESSION"] = session
         app.launch()
 
-        XCTAssertTrue(
-            app.staticTexts["Signed in"].waitForExistence(timeout: timeout),
-            "the app never reached the signed-in screen\n\(app.debugDescription)")
+        let ready = app.descendants(matching: .any).matching(
+            NSPredicate(
+                format: "identifier IN %@",
+                [
+                    "workspace.switcher", "workspace.name", "workspace.emptyMemberships", "workspace.emptyModules",
+                ]))
+        XCTAssertTrue(ready.firstMatch.waitForExistence(timeout: timeout), "the workspace shell did not open")
     }
 }

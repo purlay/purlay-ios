@@ -1,6 +1,96 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Back to %@" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Çalışma Alanına Dön"
+          }
+        }
+      }
+    },
+    "Set Up Two-Factor Authentication" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İki Faktörlü Kimlik Doğrulamayı Kur"
+          }
+        }
+      }
+    },
+    "Two-Factor Authentication Required" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İki Faktörlü Kimlik Doğrulama Gerekli"
+          }
+        }
+      }
+    },
+    "No Workspaces Yet" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Henüz Çalışma Alanı Yok"
+          }
+        }
+      }
+    },
+    "No Modules Available" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kullanılabilir Modül Yok"
+          }
+        }
+      }
+    },
+    "Open Chat in Browser" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sohbeti Tarayıcıda Aç"
+          }
+        }
+      }
+    },
+    "Switch Workspace, %@" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çalışma Alanını Değiştir, %@"
+          }
+        }
+      }
+    },
+    "Chat" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sohbet"
+          }
+        }
+      }
+    },
+    "Workspace" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çalışma Alanı"
+          }
+        }
+      }
+    },
     "Ask whoever runs it to update the server." : {
       "localizations" : {
         "tr" : {
@@ -97,16 +187,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Çalışma alanın yükleniyor…"
-          }
-        }
-      }
-    },
-    "Nothing to show here yet." : {
-      "localizations" : {
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Burada henüz gösterilecek bir şey yok."
           }
         }
       }
@@ -397,16 +477,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Oturumun kapatıldı."
-          }
-        }
-      }
-    },
-    "You're Signed In" : {
-      "localizations" : {
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oturum Açtın"
           }
         }
       }

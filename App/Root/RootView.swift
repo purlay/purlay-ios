@@ -4,7 +4,9 @@ import SwiftUI
 /// One screen per phase of the app's model, with what the model said to the person above it. Only system components: navigation
 /// chrome and materials are the system's, and any OS-version branching would live in `PurlayDesign`, never here.
 struct RootView: View {
-    let model: AppModel
+    let sessions: WorkspaceSessions
+
+    private var model: AppModel { sessions.active }
 
     var body: some View {
         screen
@@ -15,14 +17,13 @@ struct RootView: View {
     private var screen: some View {
         switch RootScreen(model.phase) {
         case .busy(let busy): BusyView(busy: busy)
-        case .problem(let problem): ProblemView(problem: problem, retry: { await RootActions.retry(model) })
+        case .problem(let problem):
+            ProblemView(
+                problem: problem, retry: { await RootActions.retry(model) },
+                returnWorkspace: sessions.returnWorkspace?.name,
+                returnToWorkspace: { await sessions.returnToPreviousWorkspace() })
         case .signIn: SignInView(signIn: { await RootActions.signIn(model) })
-        case .ready:
-            ContentUnavailableView {
-                Label(Words.signedInTitle, systemImage: "checkmark.circle")
-            } description: {
-                Text(Words.signedInDetail)
-            }
+        case .ready: WorkspaceShell(sessions: sessions)
         }
     }
 }
@@ -54,6 +55,8 @@ private struct BusyView: View {
 private struct ProblemView: View {
     let problem: ServerProblem
     let retry: () async -> Void
+    let returnWorkspace: String?
+    let returnToWorkspace: () async -> Void
 
     var body: some View {
         let words = Words.problem(problem)
@@ -70,6 +73,13 @@ private struct ProblemView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
+                if let returnWorkspace {
+                    Button {
+                        Task { await returnToWorkspace() }
+                    } label: {
+                        Text(Words.backToWorkspace(returnWorkspace))
+                    }
+                }
             }
         }
     }
