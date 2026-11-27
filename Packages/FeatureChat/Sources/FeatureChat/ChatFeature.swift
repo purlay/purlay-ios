@@ -3,7 +3,7 @@ import PurlayKit
 import PurlayModuleAPI
 import SwiftUI
 
-/// The workspace's joined channels and their read-only native histories.
+/// The workspace's joined channels and their native message feeds.
 @MainActor
 public struct ChatFeature: FeatureModule {
     public let id: ModuleID = .chat
@@ -55,6 +55,10 @@ struct ChatScope {
         }
     }
 
+    func canPost(in id: Uuid) -> Bool {
+        channel(id) != nil && model.selectedChannel == id && model.canPostRoot(in: id)
+    }
+
     func channel(_ id: Uuid) -> Channel? {
         guard allowed, let channel = model.chat.channels[id], channel.workspaceId == workspace,
             channel.state != nil
@@ -79,6 +83,14 @@ public struct ChatStrings: Sendable {
     let tryAgain: LocalizedStringResource
     let unknownSender: LocalizedStringResource
     let messageUnavailable: LocalizedStringResource
+    let writeMessage: LocalizedStringResource
+    let sendMessage: LocalizedStringResource
+    let messageTooLong: LocalizedStringResource
+    let channelReadOnly: LocalizedStringResource
+    let sendingMessage: LocalizedStringResource
+    let sentMessage: LocalizedStringResource
+    let messageSendFailed: LocalizedStringResource
+    let retryMessage: LocalizedStringResource
     let unread: @Sendable (Int) -> LocalizedStringResource
 
     public init(
@@ -90,7 +102,12 @@ public struct ChatStrings: Sendable {
         earlierFailed: LocalizedStringResource,
         jumpToLatest: LocalizedStringResource, tryAgain: LocalizedStringResource,
         unknownSender: LocalizedStringResource,
-        messageUnavailable: LocalizedStringResource, unread: @escaping @Sendable (Int) -> LocalizedStringResource
+        messageUnavailable: LocalizedStringResource,
+        writeMessage: LocalizedStringResource, sendMessage: LocalizedStringResource,
+        messageTooLong: LocalizedStringResource, channelReadOnly: LocalizedStringResource,
+        sendingMessage: LocalizedStringResource, sentMessage: LocalizedStringResource,
+        messageSendFailed: LocalizedStringResource, retryMessage: LocalizedStringResource,
+        unread: @escaping @Sendable (Int) -> LocalizedStringResource
     ) {
         self.starred = starred
         self.channels = channels
@@ -107,6 +124,14 @@ public struct ChatStrings: Sendable {
         self.tryAgain = tryAgain
         self.unknownSender = unknownSender
         self.messageUnavailable = messageUnavailable
+        self.writeMessage = writeMessage
+        self.sendMessage = sendMessage
+        self.messageTooLong = messageTooLong
+        self.channelReadOnly = channelReadOnly
+        self.sendingMessage = sendingMessage
+        self.sentMessage = sentMessage
+        self.messageSendFailed = messageSendFailed
+        self.retryMessage = retryMessage
         self.unread = unread
     }
 }

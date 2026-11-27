@@ -8,6 +8,7 @@ struct ChannelFeedView: View {
     @State private var endVisible = false
     @State private var opening = false
     @State private var earlierFailed = false
+    @State private var showOwnSend = false
     @State private var position = ScrollPosition(idType: Uuid.self)
 
     let scope: ChatScope
@@ -17,6 +18,11 @@ struct ChannelFeedView: View {
     private var model: AppModel { scope.model }
     private var channel: Channel? { scope.channel(channelID) }
     private var window: ChannelWindow? { model.chat.windows[channelID] }
+    private var canPost: Bool { scope.canPost(in: channelID) }
+    private var pending: [PendingMessage] {
+        let current = window
+        return model.selectedPending.filter { $0.channelID == channelID && current?.message($0.id) == nil }
+    }
 
     var body: some View {
         // Loading and error transitions must not restart the channel screen's visibility task.
@@ -30,33 +36,56 @@ struct ChannelFeedView: View {
                     }
                 }
             } else if let window {
-                history(window)
+                history(window, pending: pending)
             } else if model.channelLoadFailed.contains(channelID), !opening {
-                VStack(spacing: 16) {
-                    ContentUnavailableView {
-                        Label {
-                            Text(words.messagesFailed)
-                        } icon: {
-                            Image(systemName: "exclamationmark.bubble")
+                ScrollView {
+                    VStack(spacing: 16) {
+                        ContentUnavailableView {
+                            Label {
+                                Text(words.messagesFailed)
+                            } icon: {
+                                Image(systemName: "exclamationmark.bubble")
+                            }
                         }
+                        .fixedSize(horizontal: false, vertical: true)
+                        Button {
+                            Task { await open(force: true) }
+                        } label: {
+                            Text(words.tryAgain)
+                                .frame(minWidth: 44, minHeight: 44)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .accessibilityIdentifier("chat.retry")
+                        pendingRows(pending)
                     }
-                    .fixedSize(horizontal: false, vertical: true)
-                    Button {
-                        Task { await open(force: true) }
-                    } label: {
-                        Text(words.tryAgain)
-                            .frame(minWidth: 44, minHeight: 44)
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .accessibilityIdentifier("chat.retry")
+                    .padding()
+                    .frame(maxWidth: 680)
+                    .frame(maxWidth: .infinity)
                 }
+                .defaultScrollAnchor(.center, for: .alignment)
             } else {
                 ProgressView { Text(words.loadingMessages) }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if channel != nil, window != nil, model.selectedChannel == channelID {
+                ChannelComposer(scope: scope, channelID: channelID, words: words) {
+                    showOwnSend = true
+                }
+            }
+        }
+        .onChange(of: pending.last?.id) { _, id in
+            if showOwnSend, let id {
+                showOwnSend = false
+                position.scrollTo(id: id, anchor: .bottom)
+            }
+        }
         .navigationTitle(Text(verbatim: channel?.title ?? ""))
+        #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+        #endif
         .task { await open() }
         .onChange(of: scenePhase) { _, _ in updateReadVisibility() }
         .onChange(of: channel != nil) { _, _ in updateReadVisibility() }
@@ -71,8 +100,8 @@ struct ChannelFeedView: View {
     }
 
     @ViewBuilder
-    private func history(_ window: ChannelWindow) -> some View {
-        if window.isEmpty && window.reachesOldest {
+    private func history(_ window: ChannelWindow, pending: [PendingMessage]) -> some View {
+        if window.isEmpty && window.reachesOldest && pending.isEmpty {
             ContentUnavailableView {
                 Label {
                     Text(words.noMessages)
@@ -87,9 +116,9 @@ struct ChannelFeedView: View {
                     if !window.reachesOldest {
                         earlierControl
                     }
-                    ForEach(window.messages, id: \.id) { message in
-                        MessageHistoryRow(message: message, words: words)
-                            .id(message.id)
+                    ForEach(window.messages.map(HistoryItem.delivered) + pending.map(HistoryItem.pending)) { item in
+                        historyRow(item)
+                            .id(item.id)
                     }
                 }
                 .scrollTargetLayout()
@@ -106,8 +135,10 @@ struct ChannelFeedView: View {
             } action: { _, atEnd in
                 updateEndVisibility(atEnd)
             }
-            .onChange(of: window.messages.last?.id) { _, _ in
-                if endVisible { position.scrollTo(edge: .bottom) }
+            .onChange(of: window.messages.last?.id) { _, id in
+                if endVisible, let tail = pending.last?.id ?? id {
+                    position.scrollTo(id: tail, anchor: .bottom)
+                }
             }
             .toolbar {
                 if !endVisible {
@@ -132,6 +163,39 @@ struct ChannelFeedView: View {
                 }
             }
         }
+    }
+
+    private enum HistoryItem: Identifiable {
+        case delivered(Message)
+        case pending(PendingMessage)
+
+        var id: Uuid {
+            switch self {
+            case .delivered(let message): message.id
+            case .pending(let message): message.id
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func historyRow(_ item: HistoryItem) -> some View {
+        switch item {
+        case .delivered(let message):
+            MessageHistoryRow(message: message, words: words)
+        case .pending(let message):
+            PendingHistoryRow(message: message, words: words, retry: canPost ? { retry(message.id) } : nil)
+        }
+    }
+
+    private func pendingRows(_ messages: [PendingMessage]) -> some View {
+        ForEach(messages) { message in
+            historyRow(.pending(message))
+        }
+    }
+
+    private func retry(_ id: Uuid) {
+        guard canPost, pending.contains(where: { $0.id == id && $0.delivery == .failed }) else { return }
+        model.retry(id)
     }
 
     private var earlierControl: some View {

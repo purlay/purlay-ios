@@ -52,6 +52,11 @@ Its fixture supplies an unread joined channel, two recent messages and an earlie
 earlier-page read and the first read of the empty second channel, so the test can exercise both retry controls. Use separate
 fixture instances for iPhone and iPad so each run starts with the same responses.
 
+`NativeComposerUITests` uses `TEST_RUNNER_PURLAY_COMPOSER_UITEST_SERVER` and `TEST_RUNNER_PURLAY_COMPOSER_UITEST_SESSION`.
+It uses a local fixture with a writable channel, an announcement channel restricted to workspace owners and admins, and a
+workspace without Chat. The fixture holds the echo for the first message until `POST /composer-echo`, refuses the first
+attempt for the second message, and records each send's ID, channel and content at `/composer-proof`.
+
 ## Looking at the screens
 
 `scripts/verify` builds with `CODE_SIGNING_ALLOWED=NO`, and an unsigned app cannot use the Keychain on a simulator: it starts signed out
