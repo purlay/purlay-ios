@@ -3,9 +3,9 @@
 When: `purlay-swift` has published a release this app needs (a new engine feature, a new contract version).
 
 1. Read the release's notes in `purlay-swift` `CHANGELOG.md`, and whether it changes `Contract/contract.lock` (a new server version).
-2. Change the one version, everywhere it is stated: `project.yml` (`packages: PurlaySwift: from:`) and the `from:` in every
-   `Packages/*/Package.swift` that names `purlay-swift`. `scripts/enforcement` fails if they differ, which is the check that you
-   found them all.
+2. Set the released version exactly in `project.yml` (`packages: PurlaySwift: exactVersion:`) and every
+   `Packages/*/Package.swift` that names `purlay-swift` (`exact:`). `scripts/enforcement` checks both the exact requirements
+   and their agreement. SwiftPM can resolve a tag before GitHub publishes the release, so use the published version here.
 3. Look in the release notes, and in the diff of its sources, for a required-reason API it now uses (`UserDefaults`, file timestamps, boot
    time, disk space, active keyboards). `scripts/enforcement` checks this app's own sources only; the privacy manifest
    (`App/Resources/PrivacyInfo.xcprivacy`) must declare what the package uses too.
