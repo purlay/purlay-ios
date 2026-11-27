@@ -11,12 +11,52 @@
         }
       }
     },
+    "Account" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hesap"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vazgeç"
+          }
+        }
+      }
+    },
+    "Couldn’t remove this device’s sign-in. Try again." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu cihazın oturumu kaldırılamadı. Tekrar deneyin."
+          }
+        }
+      }
+    },
     "Couldn’t send message." : {
       "localizations" : {
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mesaj gönderilemedi."
+          }
+        }
+      }
+    },
+    "Couldn’t sign out everywhere. Try again." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm cihazlarda oturum kapatılamadı. Tekrar deneyin."
           }
         }
       }
@@ -87,6 +127,56 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gönderildi"
+          }
+        }
+      }
+    },
+    "Sign Out Everywhere" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm Cihazlarda Oturumu Kapat"
+          }
+        }
+      }
+    },
+    "Sign Out Everywhere…" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm Cihazlarda Oturumu Kapat…"
+          }
+        }
+      }
+    },
+    "Sign Out on This Device" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu Cihazda Oturumu Kapat"
+          }
+        }
+      }
+    },
+    "Signing out…" : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oturum kapatılıyor…"
+          }
+        }
+      }
+    },
+    "This will end your Purlay sessions on all devices." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu işlem tüm cihazlarınızdaki Purlay oturumlarını kapatır."
           }
         }
       }
@@ -677,6 +767,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mesaj yaz"
+          }
+        }
+      }
+    },
+    "You signed out on this device. The server could not be notified." : {
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu cihazda oturumu kapattınız. Sunucuya bildirilemedi."
           }
         }
       }

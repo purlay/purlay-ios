@@ -45,6 +45,8 @@ through `PurlayKit` and registers Chat only where the active workspace can use i
 history from the Kit's channel window. The Kit owns older-page cursors and read receipts. iOS gives the Kit scope
 from a visible channel and the active scene. The text composer binds to the Kit's channel draft and sends through its outbox.
 The feed shows the Kit's pending message until the confirmed message with the same ID is available. A workspace with no available feature still shows the workspace selector.
+The Account menu delegates both sign-out scopes to `PurlayKit`. A successful sign-out closes this account's workspace
+connections and returns to the sign-in screen. The same screen shows the Kit's warning if this device signed out offline.
 Adding a module takes one package under `Packages/Feature<Module>` and a registration in the app's `ModuleRegistry`.
 
 ## 3. How the app talks to the server
