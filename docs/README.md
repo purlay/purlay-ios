@@ -11,7 +11,7 @@ Swift 6, SwiftUI, Liquid Glass from iOS 26 and a system material before; iOS 18 
   the shared `AppModel` (connecting, loading, sign-in, and a problem screen per kind of server problem with Try Again), every
   sentence in English and Turkish, dismissible notices, a privacy manifest, the glass surface seam and the app icon.
   The signed-in shell switches workspaces and uses system tabs on iPhone and a sidebar in regular width. Chat has a joined-channel
-  list, a paginated feed and text sending with a retry for failed messages.
+  list, a paginated feed and text sending with a retry for failed messages. The Account menu signs out on this device or everywhere.
 - **Not yet:** threads, APNs and a release path.
 - **Known problems:** see [tech debt](architecture/tech-debt.md); the one that blocks a release is TD-005 (signing and the release path).
 - **Seen in the simulator, 2026-11-26** (a build signed ad hoc, a server that answers only the handshake): connecting; loading;
@@ -34,7 +34,7 @@ Swift 6, SwiftUI, Liquid Glass from iOS 26 and a system material before; iOS 18 
 
 ## Next slices
 
-1. FR-023: sign out, on this device and everywhere.
+1. Threads, inbox and search.
 
 ## Quick start
 

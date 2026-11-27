@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Sign out on this device or everywhere from the Account menu. An offline sign-out explains that the server was not notified.
+
 - Send text messages from the native channel feed and retry a failed send in place.
 
 - Open joined channels from Chat and read their native message history. Load earlier messages without leaving the feed.

@@ -14,6 +14,13 @@ enum Words {
     static let signInButton = LocalizedStringResource("Sign In with Browser")
     static let tryAgain = LocalizedStringResource("Try Again")
     static let dismiss = LocalizedStringResource("Dismiss")
+    static let account = LocalizedStringResource("Account")
+    static let cancel = LocalizedStringResource("Cancel")
+    static let signingOut = LocalizedStringResource("Signing out…")
+    static let signOutThisDevice = LocalizedStringResource("Sign Out on This Device")
+    static let signOutEverywhere = LocalizedStringResource("Sign Out Everywhere")
+    static let signOutEverywhereMenu = LocalizedStringResource("Sign Out Everywhere…")
+    static let signOutEverywhereDetail = LocalizedStringResource("This will end your Purlay sessions on all devices.")
     static let workspace = LocalizedStringResource("Workspace")
     static let chat = LocalizedStringResource("Chat")
     static let starred = LocalizedStringResource("Starred")
@@ -71,6 +78,8 @@ enum Words {
     /// The fixed sentences of the screens, so a test can look at each in every language.
     static let fixed: [LocalizedStringResource] = [
         connecting, waitingForBrowser, loadingWorkspace, signInPrompt, signInButton, tryAgain, dismiss, generic,
+        account, cancel, signingOut, signOutThisDevice, signOutEverywhere, signOutEverywhereMenu,
+        signOutEverywhereDetail,
         workspace, chat, noWorkspaceModules, noWorkspaces, twoFactorRequired,
         setUpTwoFactor, starred, channels, conversations, noChannels, channelUnavailable, noMessages, loadingMessages,
         messagesFailed, loadEarlier, loadingEarlier, earlierFailed, jumpToLatest, unknownSender, messageUnavailable,
@@ -142,6 +151,12 @@ enum Words {
         case .sessionEndedByServer:
             return LocalizedStringResource("You were signed out by the server. Sign in again.")
         case .signedOutElsewhere: return LocalizedStringResource("You were signed out.")
+        case .serverNotTold:
+            return LocalizedStringResource("You signed out on this device. The server could not be notified.")
+        case .signOutEverywhereFailed:
+            return LocalizedStringResource("Couldn’t sign out everywhere. Try again.")
+        case .signOutFailed:
+            return LocalizedStringResource("Couldn’t remove this device’s sign-in. Try again.")
         case .sessionEndsSoon(let end):
             let when = end.formatted(date: .abbreviated, time: .shortened)
             return LocalizedStringResource("Your session ends on \(when). Sign in again before then to stay connected.")

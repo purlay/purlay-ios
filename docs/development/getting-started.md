@@ -57,6 +57,13 @@ It uses a local fixture with a writable channel, an announcement channel restric
 workspace without Chat. The fixture holds the echo for the first message until `POST /composer-echo`, refuses the first
 attempt for the second message, and records each send's ID, channel and content at `/composer-proof`.
 
+## Sign-out on iPhone and iPad
+
+`NativeSignOutUITests` uses the three `TEST_RUNNER_PURLAY_SIGN_OUT_UITEST_*` variables `SERVER`, `CONTROL` and `SESSION`.
+Use a loopback fixture that keeps two device sessions and supplies two memberships with chat. Its control listener records
+logout paths and WebSocket counts, holds or refuses requests, and can stop and restart the app's listener. The tests relaunch
+the ad-hoc-signed Debug app without a seeded session to check that it forgot the stored credential.
+
 ## Looking at the screens
 
 `scripts/verify` builds with `CODE_SIGNING_ALLOWED=NO`, and an unsigned app cannot use the Keychain on a simulator: it starts signed out

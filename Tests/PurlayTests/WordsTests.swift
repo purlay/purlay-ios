@@ -27,6 +27,7 @@ struct WordsTests {
         let notices: [Notice.Kind] =
             addresses.map { .invalidAddress($0) } + signIns.map { .signInFailed($0) } + [
                 .sessionExpired, .sessionEndedByServer, .signedOutElsewhere,
+                .serverNotTold, .signOutEverywhereFailed, .signOutFailed,
                 .sessionEndsSoon(Date(timeIntervalSince1970: 0)),
                 .storageProblem, .originMismatch, .readFailed,
             ]

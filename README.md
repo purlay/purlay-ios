@@ -12,7 +12,7 @@
 </div>
 
 > **Status: foundation.** The project, package graph, native sign-in and CI are in place and tested against a real
-> server. The signed-in app has adaptive navigation and workspace switching. Chat can show joined channels, read their history and send text messages.
+> server. The signed-in app has adaptive navigation, workspace switching and account sign-out. Chat can show joined channels, read their history and send text messages.
 
 ## What it is
 

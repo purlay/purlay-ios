@@ -20,6 +20,7 @@ enum WorkspaceDestinations {
 struct WorkspaceShell: View {
     @Environment(\.horizontalSizeClass) private var width
     @State private var selected: ModuleID?
+    @State private var confirmSignOut = false
     @State private var columns = NavigationSplitViewVisibility.all
     let sessions: WorkspaceSessions
 
@@ -37,6 +38,20 @@ struct WorkspaceShell: View {
         }
         .onChange(of: features.map(\.id), initial: true) { _, ids in
             if selected.map(ids.contains) != true { selected = ids.first }
+        }
+        .alert(Text(Words.signOutEverywhere), isPresented: $confirmSignOut) {
+            Button(role: .destructive) {
+                Task { await sessions.signOut(.everywhere) }
+            } label: {
+                Text(Words.signOutEverywhere)
+            }
+            .accessibilityIdentifier("account.confirmSignOutEverywhere")
+            Button(role: .cancel) {
+            } label: {
+                Text(Words.cancel)
+            }
+        } message: {
+            Text(Words.signOutEverywhereDetail)
         }
     }
 
@@ -80,40 +95,42 @@ struct WorkspaceShell: View {
 
     private func empty(_ model: AppModel) -> some View {
         NavigationStack {
-            if model.me?.mustEnrolTwoFactor == true {
-                ContentUnavailableView {
-                    Label {
-                        Text(Words.twoFactorRequired)
-                    } icon: {
-                        Image(systemName: "lock.shield")
+            Group {
+                if model.me?.mustEnrolTwoFactor == true {
+                    ContentUnavailableView {
+                        Label {
+                            Text(Words.twoFactorRequired)
+                        } icon: {
+                            Image(systemName: "lock.shield")
+                        }
+                    } actions: {
+                        if let destination = model.twoFactorSetupURL {
+                            Link(destination: destination) { Text(Words.setUpTwoFactor) }
+                        }
                     }
-                } actions: {
-                    if let destination = model.twoFactorSetupURL {
-                        Link(destination: destination) { Text(Words.setUpTwoFactor) }
+                } else if model.workspace != nil {
+                    ContentUnavailableView {
+                        Label {
+                            Text(Words.noWorkspaceModules)
+                        } icon: {
+                            Image(systemName: "square.grid.2x2")
+                        }
                     }
+                    .accessibilityIdentifier("workspace.emptyModules")
+                    .navigationTitle(Text(Words.workspace))
+                } else {
+                    ContentUnavailableView {
+                        Label {
+                            Text(Words.noWorkspaces)
+                        } icon: {
+                            Image(systemName: "person.2")
+                        }
+                    }
+                    .accessibilityIdentifier("workspace.emptyMemberships")
+                    .navigationTitle(Text(Words.workspace))
                 }
-            } else if model.workspace != nil {
-                ContentUnavailableView {
-                    Label {
-                        Text(Words.noWorkspaceModules)
-                    } icon: {
-                        Image(systemName: "square.grid.2x2")
-                    }
-                }
-                .accessibilityIdentifier("workspace.emptyModules")
-                .navigationTitle(Text(Words.workspace))
-                .toolbar { toolbar }
-            } else {
-                ContentUnavailableView {
-                    Label {
-                        Text(Words.noWorkspaces)
-                    } icon: {
-                        Image(systemName: "person.2")
-                    }
-                }
-                .accessibilityIdentifier("workspace.emptyMemberships")
-                .navigationTitle(Text(Words.workspace))
             }
+            .toolbar { toolbar }
         }
     }
 
@@ -127,9 +144,38 @@ struct WorkspaceShell: View {
 
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
+        ToolbarItemGroup(placement: .topBarTrailing) {
             if let workspace = sessions.active.workspace {
                 WorkspaceSwitcher(sessions: sessions, workspace: workspace)
+            }
+            if sessions.isSigningOut {
+                ProgressView()
+                    .accessibilityLabel(Text(Words.signingOut))
+                    .accessibilityIdentifier("account.signingOut")
+            } else {
+                Menu {
+                    Button(role: .destructive) {
+                        Task { await sessions.signOut(.thisDevice) }
+                    } label: {
+                        Text(Words.signOutThisDevice)
+                    }
+                    .accessibilityIdentifier("account.signOutThisDevice")
+                    Button(role: .destructive) {
+                        confirmSignOut = true
+                    } label: {
+                        Text(Words.signOutEverywhereMenu)
+                    }
+                    .accessibilityIdentifier("account.signOutEverywhere")
+                } label: {
+                    Label {
+                        Text(Words.account)
+                    } icon: {
+                        Image(systemName: "person.crop.circle")
+                    }
+                    .labelStyle(.iconOnly)
+                }
+                .accessibilityIdentifier("account.menu")
+                .disabled(sessions.isChangingSession)
             }
         }
     }
@@ -167,7 +213,7 @@ private struct WorkspaceSwitcher: View {
             }
             .accessibilityLabel(Text(Words.switchWorkspace(choiceLabel(workspace, in: choices))))
             .accessibilityIdentifier("workspace.switcher")
-            .disabled(sessions.isSelecting)
+            .disabled(sessions.isChangingSession)
         } else {
             Text(verbatim: workspace.name)
                 .font(.subheadline)
